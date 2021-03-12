@@ -52,6 +52,10 @@ set(EXAMPLEB1_SCRIPTS
   /plus2/readme.txt
   /minus1/readme.txt
   /minus2/readme.txt
+  analisys.py
+  plot_b.py
+  fit.py
+  escrever.py
   )
 
 foreach(_script ${EXAMPLEB1_SCRIPTS})

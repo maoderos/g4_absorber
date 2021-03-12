@@ -1362,8 +1362,8 @@ G4double voFaMgRing_z = zFa - mag_position;
 build_abs = true;
 //build_abs = false;
 
-build_magnetic = true;
-//build_magnetic = false;
+//build_magnetic = true;
+build_magnetic = false;
 
 if (build_abs) {
 

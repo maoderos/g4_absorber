@@ -50,7 +50,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
    
   auto track = step->GetTrack();
 
-   G4cout<<particle_process << "\n";
+   //G4cout<<particle_process << "\n";
    if (track->GetTrackID() != 1) {
      track->SetTrackStatus(fKillTrackAndSecondaries);
      //const G4String process_name = track->GetCreatorProcess()->GetProcessName();

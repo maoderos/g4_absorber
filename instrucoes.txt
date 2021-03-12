@@ -1,0 +1,23 @@
+1 - crie uma pasta build: $ mkdir build 
+
+2 - entre no arquivo "escrever .py". Este arquivo criará os scripts para o G4 rodar. altere a variável "n" para o número de eventos que quer simular
+
+3 - Entre na pasta build: $cd build
+4 - faça o comando source "caminho/geant4.sh"
+5 - $ cmake ../
+
+Agora coloque os arquivos que estão dentro da pasta "scripts" para a basta build
+
+Agora que os scripts estão na pasta build. Faça
+6 - $ chmod +x sim.sh
+    $ chmod +x analysis.sh
+7 - $python3 escrever.py
+
+8 - $ ./sim.sh
+
+Uma pasta "data" foi criada. Dentro dela estão todos os dados. Se a simulação for sem campo magnético, nomeie como "0T". Com campo, nomeie $0.5T$. Apos as 2 simulações forem feitas, coloque o arquivo analysis.py dentro das duas pastas, 0T e 0.5T e rode o script de analise de dados:
+ 
+$./analysis.sh
+
+
+
