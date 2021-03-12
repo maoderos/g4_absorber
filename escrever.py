@@ -3,7 +3,7 @@ import math
 pz0= 25 
 pz1= 100 
 phi = [45,60,90] 
-n = 50000
+n = 50
 
 particle = ["mu+", "mu-"]
 
