@@ -15,7 +15,15 @@ Agora que os scripts estão na pasta build. Faça
 
 8 - $ ./sim.sh
 
-Uma pasta "data" foi criada. Dentro dela estão todos os dados. Se a simulação for sem campo magnético, nomeie como "0T". Com campo, nomeie $0.5T$. Apos as 2 simulações forem feitas, rode o script de analise de dados:
+Uma pasta "data" foi criada. Dentro dela estão todos os dados. Se a simulação for sem campo magnético, nomeie como "0T". Com campo, nomeie "0.5T". Isso pode ser feito com o comando 
+
+$ mv data 0.5T
+
+ou
+
+$ mv data 0T
+
+Apos feitas as 2 simulações, rode o script de analise de dados:
  
 $./analysis.sh
 

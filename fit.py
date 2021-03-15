@@ -90,17 +90,34 @@ for i in alpha:
    plt.subplot(2,2,j)
    df_alpha_p_b =  data_p_b[(data_p_b["alpha"] == i)& (data_p_b["phi"] == 45) ]
    df_alpha_p =  data_p[(data_p["alpha"] == i)& (data_p["phi"] == 45)]
-   params, params_covariance = optimize.curve_fit(test_func, df_alpha_p["E2_med"], df_alpha_p_b["E2_med"],
+   params, params_covariance = optimize.curve_fit(test_func, df_alpha_p["pzmed"], df_alpha_p_b["pzmed"],
                                                p0=[1, 1])
    
-   sns.lineplot(x=df_alpha_p["E2_med"], y=test_func(df_alpha_p["E2_med"], params[0], params[1]),
+   sns.lineplot(x=df_alpha_p["pzmed"], y=test_func(df_alpha_p["pzmed"], params[0], params[1]),
          label=r'Fit $\alpha$ = {0}'.format(i))
-   sns.scatterplot(x=df_alpha_p["E2_med"], y=df_alpha_p_b["E2_med"],label= r'$\alpha$ = {0}'.format(i), marker="+")
+   sns.scatterplot(x=df_alpha_p["pzmed"], y=df_alpha_p_b["pzmed"],label= r'$\alpha$ = {0}'.format(i), marker="+")
    plt.legend(loc="best",fontsize=8)
 
 plt.tight_layout()
 plt.savefig("pz_bXpz_fit.pdf", dpi=1000)
 fig, ax1 = plt.subplots()
 #ax1.set_title("mu+")
+
+fig = plt.figure(figsize=(10,10))
+for i in alpha:
+   
+   df_alpha_p_b =  data_p_b[(data_p_b["alpha"] == i)& (data_p_b["phi"] == 45) ]
+   df_alpha_p =  data_p[(data_p["alpha"] == i)& (data_p["phi"] == 45)]
+   params, params_covariance = optimize.curve_fit(test_func, df_alpha_p["pzmed"], df_alpha_p_b["pzmed"],
+                                               p0=[1, 1])
+   
+   sns.lineplot(x=df_alpha_p["pzmed"], y=test_func(df_alpha_p["pzmed"], params[0], params[1]),
+         label=r'Fit $\alpha$ = {0}'.format(i))
+   sns.scatterplot(x=df_alpha_p["pzmed"], y=df_alpha_p_b["pzmed"],label= r'$\alpha$ = {0}'.format(i), marker="+")
+   plt.legend(loc="best",fontsize=8)
+
+plt.tight_layout()
+plt.savefig("pz_bXpz_fit_all.pdf", dpi=1000)
+fig, ax1 = plt.subplots()
 
 
