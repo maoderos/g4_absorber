@@ -28,31 +28,30 @@ B1SteppingAction::~B1SteppingAction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B1SteppingAction::UserSteppingAction(const G4Step* step)
+void B1SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 
-  if (Log_volumes.empty()) { 
-    const B1DetectorConstruction* detectorConstruction
-      = static_cast<const B1DetectorConstruction*>
-        (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    Log_volumes = detectorConstruction->GetVolumes(); 
-      
-  }
-  
-  // get volume of the current step 
-  G4LogicalVolume* volume 
-    = step->GetPreStepPoint()->GetTouchableHandle()
-      ->GetVolume()->GetLogicalVolume();
-  //get currente particle    
-  
-  G4String particle_name = step->GetTrack()->GetParticleDefinition()->GetParticleName();
-  const G4String particle_process = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName(); 
-   
-  auto track = step->GetTrack();
 
+  // get volume of the current step
+  G4LogicalVolume* volume
+    = aStep->GetPreStepPoint()->GetTouchableHandle()
+      ->GetVolume()->GetLogicalVolume();
+  //get currente particle
+
+  G4String particle_name = aStep->GetTrack()->GetParticleDefinition()->GetParticleName();
+  const G4String particle_process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
+
+  auto track = aStep->GetTrack();
+
+  //G4String physical_name = aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName();
+
+  //G4String log_volume = aStep->GetTrack()->GetVolume()->GetName();
+
+  //G4cout << "Physic: " << physical_name << G4endl;
+  //G4cout << "Logical: " << log_volume << G4endl;
    //G4cout<<particle_process << "\n";
    if (track->GetTrackID() != 1) {
-     track->SetTrackStatus(fKillTrackAndSecondaries);
+     //track->SetTrackStatus(fKillTrackAndSecondaries);
      //const G4String process_name = track->GetCreatorProcess()->GetProcessName();
      //G4cout<<process_name << "\n";
     }
@@ -60,18 +59,17 @@ void B1SteppingAction::UserSteppingAction(const G4Step* step)
     //  G4cout << particle_process << "\n";
    //}
 
-     
-     
-  
-   
-   
-  
-    
-  
- 
+
+
+
+
+
+
+
+
+
 
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-

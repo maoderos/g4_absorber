@@ -33,7 +33,21 @@
 #include "G4FieldManager.hh"
 #include "G4TransportationManager.hh"
 #include "G4Cons.hh"
-
+#include "G4SDManager.hh"
+#include "G4MultiFunctionalDetector.hh"
+#include "G4VPrimitiveScorer.hh"
+#include "G4PSPopulation.hh"
+#include "G4PSPassageCellCurrent.hh"
+#include "G4SDParticleFilter.hh"
+#include "G4Region.hh"
+#include "G4ScoringManager.hh"
+#include "G4PSPassageCellFlux.hh"
+#include "G4PSPassageTrackLength.hh"
+#include "G4ScoringManager.hh"
+#include "G4PSNofStep.hh"
+#include "G4PSNofCollision.hh"
+#include "G4PSNofSecondary.hh"
+//#include "G4PSVolumeFlux.hh"
 #include <cmath>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -56,7 +70,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
 
- 
+
 
   // Option to switch on/off checking of volumes overlaps
   //
@@ -67,7 +81,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
   //
   // World
   //
- 
+
   G4Material* world_mat = nist->FindOrBuildMaterial("G4_Galactic");
 
   G4Box* solidWorld =
@@ -102,7 +116,7 @@ G4Box* solidMag =
     logicMag =
     new G4LogicalVolume(solidMag,          //its solid
                         world_mat,           //its material
-                        "MagField_box"); 
+                        "MagField_box");
 
 
        new G4PVPlacement(0,                     //no rotation
@@ -117,7 +131,7 @@ G4Box* solidMag =
 
 
 
- 
+
  //-------- ABSORBER --------------
  //materials
 
@@ -128,7 +142,7 @@ G4Box* solidMag =
 
 
 
- //Carbon Material 
+ //Carbon Material
 
  G4Material* kMedCSh = new G4Material("ABSO_C_C2", 6.,  12.01*g/mole,  1.75*g/cm3);
 //matmgr.Material("ABSO", 46, "CARBON2$", 12.01, 6., 1.75, 24.4, 49.9);
@@ -139,12 +153,12 @@ G4Box* solidMag =
 G4Material* kMedPb = new G4Material("ABSO_PB_C0", 82., 207.19*g/mole,15.9994*g/cm3);
 G4cout << kMedPb<< G4endl;
 //matmgr.Material("ABSO", 53, "LEAD2$", 207.19, 82., 11.35, .56, 18.5);
- //Air 
+ //Air
 
   std::vector<G4double> aAir = {12.0107, 14.0067, 15.9994, 39.948};
   std::vector<G4double> zAir = {6., 7., 8., 18.};
   std::vector<G4double> wAir = {0.000124, 0.755267, 0.231781, 0.012827};
-  
+
 
 // Polyethylene
   //
@@ -198,20 +212,20 @@ G4cout << kMedConcSh << G4endl;
    //G4cout << steel[i] << G4endl;
 
 }
- 
+
  G4cout << kMedSteel << G4endl;
- 
+
  // Ni-Cu-W alloy
   //
   std::vector<G4double> aniwcu = {58.6934*g/mole, 183.84*g/mole, 63.546*g/mole};
   std::vector<G4double> zniwcu = {28., 74., 29.};
   std::vector<G4double> wniwcu = {0.015, 0.95, 0.035};
-  
+
   std::vector<G4Element *>Ni_Cu_W;
   Ni_Cu_W.reserve(aniwcu.size());
-  
+
   G4Material* kMedNiW = new G4Material("ABSO_Ni/W0", 18.78*g/cm3, aniwcu.size());
-  
+
   for (std::size_t i = 0; i < aniwcu.size(); i++) {
    G4String symb = symbol[int(zniwcu[i]) - 1];
    G4cout << symb << G4endl;
@@ -238,12 +252,12 @@ G4cout << kMedConcSh << G4endl;
   }
 
  // matmgr.Mixture("ABSO", 58, "POLYETHYLEN2$", apoly, zpoly, .95, 2, wpoly);
-  
+
   std::vector<G4Element* >CH2;
   CH2.reserve(aPolyCc.size());
 
   G4Material* KmedCH2Sh = new G4Material("POLYETHYLEN2$", .95*g/cm3, aPolyCc.size() );
-  
+
   for (std::size_t i = 0; i < aPolyCc.size(); i++) {
    G4String symb = symbol[int(zPolyCc[i]) - 1];
    CH2[i] = new G4Element(("Poly" + std::to_string(i)),symb,zPolyCc[i], aPolyCc[i]);
@@ -264,7 +278,7 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 //some importante initial values
 
  # define PI 3.14159265
- 
+
   G4double kDegRad = PI/180.00;
 
   // Mimimum angle of the tracking region
@@ -274,7 +288,7 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
   //
   G4double angle05 = tan(5.*kDegRad);
   // Maximum angle of the tracking region
-  G4double angle10 = tan(10.*kDegRad);  
+  G4double angle10 = tan(10.*kDegRad);
   // Opening angle of the FA snout
   G4double angle24 = tan(24.*kDegRad);
   // Opneing angle of the inner cone
@@ -295,7 +309,6 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 
   G4double z;
 
- 
 
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -349,7 +362,7 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 
 
 //Construction of solids
-   
+
 // Pos 1
   ///////////////////////////////////
   //    FA Steel Envelope          //
@@ -388,31 +401,32 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
   G4double rInSteelEnvelopeFI = 42.0*cm / 2.;
   G4double rOuSteelEnvelopeFI = (85.0*cm / 2.) + 0.06*cm;
 
-  
-  
 
-  
+
+
+  if (aRegion) delete aRegion;
+
 
   // Front cover
-  
+
 
   G4Cons* shFaSteelEnvelopeC1_cone = new G4Cons("shFaSteelEnvelopeC1_cone", rInSteelEnvelopeFC1, rOuSteelEnvelopeFC1,  rInSteelEnvelopeFC2, rOuSteelEnvelopeFC2, dzSteelEnvelopeFC, angle0, angle360);
- 
+
 
  // Insert
 
   G4Tubs* shFaSteelEnvelopeT_tub = new G4Tubs("shFaSteelEnvelopeT_tub", rInSteelEnvelopeFI, rOuSteelEnvelopeFI, dzSteelEnvelopeFI, 0.*deg,360.*deg);
 
- G4VSolid* shFaSteelEnvelopeC1_T = new G4SubtractionSolid("SteelEnv", shFaSteelEnvelopeC1_cone, shFaSteelEnvelopeT_tub, 0,G4ThreeVector(0,0, (-dzSteelEnvelopeFC + dzSteelEnvelopeFI)));  
+ G4VSolid* shFaSteelEnvelopeC1_T = new G4SubtractionSolid("SteelEnv", shFaSteelEnvelopeC1_cone, shFaSteelEnvelopeT_tub, 0,G4ThreeVector(0,0, (-dzSteelEnvelopeFC + dzSteelEnvelopeFI)));
 
 
-  G4LogicalVolume* shFaSteelEnvelopeC1 = new G4LogicalVolume(shFaSteelEnvelopeC1_T, kMedSteel, "shFaSteelEnvelopeC1");  
+  G4LogicalVolume* shFaSteelEnvelopeC1 = new G4LogicalVolume(shFaSteelEnvelopeC1_T, kMedSteel, "shFaSteelEnvelopeC1");
 
   Logical_volumes.push_back(shFaSteelEnvelopeC1);
 
   // 5 deg cone
-  
-  G4Cons* shFaSteelEnvelopeC2_cone = new G4Cons("shFaSteelEnvelopeC2_cone", rInSteelEnvelopeC5, rOuSteelEnvelopeC5, 
+
+  G4Cons* shFaSteelEnvelopeC2_cone = new G4Cons("shFaSteelEnvelopeC2_cone", rInSteelEnvelopeC5, rOuSteelEnvelopeC5,
 		                   rInSteelEnvelopeC10, rOuSteelEnvelopeC10, dzSteelEnvelopeC5,
 				    angle0, angle360);
 
@@ -421,8 +435,8 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
   Logical_volumes.push_back(shFaSteelEnvelopeC2);
 
   // 10 deg cone
-  
-  G4Cons* shFaSteelEnvelopeC3_cone = new G4Cons("shFaSteelEnvelopeC3_cone", rInSteelEnvelopeC10, rOuSteelEnvelopeC10, 
+
+  G4Cons* shFaSteelEnvelopeC3_cone = new G4Cons("shFaSteelEnvelopeC3_cone", rInSteelEnvelopeC10, rOuSteelEnvelopeC10,
 		                   rInSteelEnvelopeR1, rOuSteelEnvelopeR1, dzSteelEnvelopeC10,
 				    angle0, angle360);
 
@@ -430,53 +444,68 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 
   Logical_volumes.push_back(shFaSteelEnvelopeC3);
 
- 
+
 
   // Rear Ring
-  
 
-  G4Cons* shFaSteelEnvelopeC4_cone = new G4Cons("shFaSteelEnvelopeC4_cone", rInSteelEnvelopeR1, rOuSteelEnvelopeR2, 
+
+  G4Cons* shFaSteelEnvelopeC4_cone = new G4Cons("shFaSteelEnvelopeC4_cone", rInSteelEnvelopeR1, rOuSteelEnvelopeR2,
 		                   rInSteelEnvelopeR2, rOuSteelEnvelopeR2, dzSteelEnvelopeR,
 				    angle0, angle360);
 
   G4LogicalVolume* shFaSteelEnvelopeC4 = new G4LogicalVolume(shFaSteelEnvelopeC4_cone, kMedSteel, "shFaSteelEnvelopeC4");
 
   Logical_volumes.push_back(shFaSteelEnvelopeC4);
- 
-  
+
+
   // Insert
 
 
  // G4Tubs* shFaSteelEnvelopeT_tub = new G4Tubs("shFaSteelEnvelopeT_tub", rInSteelEnvelopeFI, rOuSteelEnvelopeFI, dzSteelEnvelopeFI, 0.*deg,360.*deg);
- 
-
- 
- 
 
 
-  
+
+
+
+
+
  G4AssemblyVolume* voFaSteelEnvelope = new G4AssemblyVolume();
+
+ //CI_log[i]->SetRegion(aRegion);
+   //  aRegion->AddRootLogicalVolume(CI_log[i]);
 
   z = dzSteelEnvelopeFC;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaSteelEnvelope->AddPlacedVolume(shFaSteelEnvelopeC1, Tr);
+  volumes.push_back(shFaSteelEnvelopeC1);
+  names.push_back("shFaSteelEnvelopeC1");
+
 
 
   z += dzSteelEnvelopeFC + dzSteelEnvelopeC5;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaSteelEnvelope->AddPlacedVolume(shFaSteelEnvelopeC2, Tr);
+  volumes.push_back(shFaSteelEnvelopeC2);
+  names.push_back("shFaSteelEnvelopeC2");
+
 
   z +=  dzSteelEnvelopeC5 + dzSteelEnvelopeC10;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaSteelEnvelope->AddPlacedVolume(shFaSteelEnvelopeC3, Tr);
+  volumes.push_back(shFaSteelEnvelopeC3);
+  names.push_back("shFaSteelEnvelopeC3");
+
 
   z += dzSteelEnvelopeC10 + dzSteelEnvelopeR;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaSteelEnvelope->AddPlacedVolume(shFaSteelEnvelopeC4, Tr);
+  volumes.push_back(shFaSteelEnvelopeC4);
+  names.push_back("shFaSteelEnvelopeC4");
+
 
 
 
@@ -491,14 +520,14 @@ shFaSteelEnvelopeC4->SetVisAttributes(color);
 //shFaSteelEnvelopeT->SetVisAttributes(color);
 
 
-  
+
 
 
 
  // Pos 2
   ///////////////////////////////////
   //    FA End Plate               //
-  //    Drawing ALIP2A__0037       //	
+  //    Drawing ALIP2A__0037       //
   ///////////////////////////////////
   //
   //
@@ -520,25 +549,28 @@ shFaSteelEnvelopeC4->SetVisAttributes(color);
       dxEndPlate, dyEndPlate, dzEndPlate);
 
 
-   
+
   G4Tubs* endPlate2 = new G4Tubs("endPlate2", 0., rInEndPlate, (dzEndPlate+ 0.1*cm), 0.*deg,360.*deg);
-  
+
 
   G4Tubs* endPlate3 = new G4Tubs("endPlate3", rInEndPlateI, rOuEndPlateI, (dzEndPlateI + 0.1*cm), 0.*deg,360.*deg);
-  
 
 
-  
 
-  G4VSolid* hole_square0 = new G4SubtractionSolid("Box+Cylinder", endPlate1, endPlate2);  
 
-  
-  G4VSolid* shFaEndPlate_solid = new G4SubtractionSolid("shFaEndPlate", hole_square0, endPlate3, 0,G4ThreeVector(0,0, (-2*dzEndPlateI -0.05*cm)));  
+
+  G4VSolid* hole_square0 = new G4SubtractionSolid("Box+Cylinder", endPlate1, endPlate2);
+
+
+  G4VSolid* shFaEndPlate_solid = new G4SubtractionSolid("shFaEndPlate", hole_square0, endPlate3, 0,G4ThreeVector(0,0, (-2*dzEndPlateI -0.05*cm)));
 
 
   G4LogicalVolume* voFaEndPlate = new G4LogicalVolume(shFaEndPlate_solid, kMedSteel, "shFaEndPlate");
-   
- 
+  volumes.push_back(voFaEndPlate);
+  names.push_back("voFaEndPlate");
+  Logical_volumes.push_back(voFaEndPlate);
+
+
  //setting color to the solid
  voFaEndPlate->SetVisAttributes(gray);
 
@@ -552,7 +584,7 @@ shFaSteelEnvelopeC4->SetVisAttributes(color);
 
   // Width of the Flange
   G4double dzFaFlange = 2.*cm/2;
- 	
+
   // Outer radius
   G4double rOuFaFlange = 41.0*cm / 2.;
   // 1st section
@@ -564,7 +596,7 @@ shFaSteelEnvelopeC4->SetVisAttributes(color);
 
 
 
-  G4Cons* shFaFlange1_cone = new G4Cons("shFaFlange1_cone", rInFaFlange1, rOuFaFlange, 
+  G4Cons* shFaFlange1_cone = new G4Cons("shFaFlange1_cone", rInFaFlange1, rOuFaFlange,
 		                   rInFaFlange1, rOuFaFlange, dzFaFlange1,
 				    angle0, angle360);
 
@@ -573,28 +605,32 @@ shFaSteelEnvelopeC4->SetVisAttributes(color);
 
   Logical_volumes.push_back(shFaFlange1);
 
-  
- G4Cons* shFaFlange2_cone = new G4Cons("shFaFlange2_cone", rInFaFlange2, rOuFaFlange, 
+
+ G4Cons* shFaFlange2_cone = new G4Cons("shFaFlange2_cone", rInFaFlange2, rOuFaFlange,
 		                   rInFaFlange2, rOuFaFlange, dzFaFlange2,
 				   angle0, angle360);
 
-G4LogicalVolume* shFaFlange2 = new G4LogicalVolume(shFaFlange2_cone, kMedSteel, "flange"); 
+G4LogicalVolume* shFaFlange2 = new G4LogicalVolume(shFaFlange2_cone, kMedSteel, "flange");
 
  Logical_volumes.push_back(shFaFlange2);
 
- 
+
 G4AssemblyVolume* voFaFlange = new G4AssemblyVolume();
 
 z = dzFaFlange1;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaFlange->AddPlacedVolume(shFaFlange1, Tr);
+volumes.push_back(shFaFlange1);
+names.push_back("shFaFlange1");
+
 
 z += dzFaFlange1 + dzFaFlange2;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaFlange->AddPlacedVolume(shFaFlange2, Tr);
-
+volumes.push_back(shFaFlange2);
+names.push_back("shFaFlange2");
 
 
 //setting color to solids
@@ -627,11 +663,11 @@ shFaFlange2->SetVisAttributes(gray);
   G4double rOuFaQPlateR = 42.55*cm;
   // Lenth of Plate - Rear Flange
   G4double dzFaWPlate = dzFaWPlateF + dzFaWPlateC1 + dzFaWPlateC2;
-  
 
 
 
-  G4Cons* shFaWPlateA1_cone = new G4Cons("shFaWPlateA1_cone", rInFaQPlateF, rOuFaQPlateF, 
+
+  G4Cons* shFaWPlateA1_cone = new G4Cons("shFaWPlateA1_cone", rInFaQPlateF, rOuFaQPlateF,
 		                   rInFaQPlateF, rOuFaQPlateC1, dzFaWPlateF,
 				   angle0, angle360);
 
@@ -642,7 +678,7 @@ shFaFlange2->SetVisAttributes(gray);
 
   // 24 deg cone
 
-  G4Cons* shFaWPlateA2_cone = new G4Cons("shFaWPlateA2_cone", rInFaQPlateC1, rOuFaQPlateC1, 
+  G4Cons* shFaWPlateA2_cone = new G4Cons("shFaWPlateA2_cone", rInFaQPlateC1, rOuFaQPlateC1,
 		                   rInFaQPlateC2, rOuFaQPlateC2, dzFaWPlateC1,
 				   angle0, angle360);
 
@@ -650,26 +686,26 @@ shFaFlange2->SetVisAttributes(gray);
 
   Logical_volumes.push_back(shFaWPlateA2);
 
- 
 
-  
+
+
   // 5 deg cone
-  G4Cons* shFaWPlateA3_cone = new G4Cons("shFaWPlateA3_cone", rInFaQPlateC2, rOuFaQPlateC2, 
+  G4Cons* shFaWPlateA3_cone = new G4Cons("shFaWPlateA3_cone", rInFaQPlateC2, rOuFaQPlateC2,
 		                   rInFaQPlateC3, rOuFaQPlateC3, dzFaWPlateC2,
 				    angle0, angle360);
 
   G4LogicalVolume* shFaWPlateA3 = new G4LogicalVolume(shFaWPlateA3_cone, kMedNiW, "shFaWPlateA3");
-  
+
   Logical_volumes.push_back(shFaWPlateA3);
 
-  
+
   // Rear Flange
-  G4Cons* shFaWPlateA4_cone = new G4Cons("shFaWPlateA4_cone", rInFaQPlateR, rOuFaQPlateR, 
+  G4Cons* shFaWPlateA4_cone = new G4Cons("shFaWPlateA4_cone", rInFaQPlateR, rOuFaQPlateR,
 		                   rInFaQPlateR, rOuFaQPlateR, dzFaWPlateR,
 				    angle0, angle360);
 
   G4LogicalVolume* shFaWPlateA4 = new G4LogicalVolume(shFaWPlateA4_cone, kMedNiW, "shFaWPlateA4");
-  
+
   Logical_volumes.push_back(shFaWPlateA4);
 
 
@@ -681,26 +717,34 @@ shFaFlange2->SetVisAttributes(gray);
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaWPlateteA->AddPlacedVolume(shFaWPlateA1, Tr);
+  volumes.push_back(shFaWPlateA1);
+  names.push_back("shFaWPlateA1");
 
-  z+= dzFaWPlateF + dzFaWPlateC1; 
+  z+= dzFaWPlateF + dzFaWPlateC1;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaWPlateteA->AddPlacedVolume(shFaWPlateA2, Tr);
+  volumes.push_back(shFaWPlateA2);
+  names.push_back("shFaWPlateA2");
 
-  z+=  dzFaWPlateC1 + dzFaWPlateC2; 
+  z+=  dzFaWPlateC1 + dzFaWPlateC2;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaWPlateteA->AddPlacedVolume(shFaWPlateA3, Tr);
+  volumes.push_back(shFaWPlateA3);
+  names.push_back("shFaWPlateA3");
 
-  z+=  dzFaWPlateC2 + dzFaWPlateR; 
+  z+=  dzFaWPlateC2 + dzFaWPlateR;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaWPlateteA->AddPlacedVolume(shFaWPlateA4, Tr);
+  volumes.push_back(shFaWPlateA4);
+  names.push_back("shFaWPlateA4");
 
- 
-  
- //setting color  
-  
+
+
+ //setting color
+
  shFaWPlateA1->SetVisAttributes(gray);
  shFaWPlateA2->SetVisAttributes(gray);
  shFaWPlateA3->SetVisAttributes(gray);
@@ -743,11 +787,13 @@ shFaFlange2->SetVisAttributes(gray);
 
 // Central Part
 
-G4Cons* shFaWTube1_1cone = new G4Cons("shFaWTube1_1cone", rInFaWTube1C1, rOuFaWTube1C1, 
+G4Cons* shFaWTube1_1cone = new G4Cons("shFaWTube1_1cone", rInFaWTube1C1, rOuFaWTube1C1,
 		                   rInFaWTube1C1, rOuFaWTube1C2, dzFaWTube1C,
 				   angle0, angle360);
 
 G4LogicalVolume* shFaWTube1_1 = new G4LogicalVolume(shFaWTube1_1cone, kMedNiW, "shFaWTube1_1");
+volumes.push_back(shFaWTube1_1);
+names.push_back("shFaWTube1_1");
 
 Logical_volumes.push_back(shFaWTube1_1);
 
@@ -756,7 +802,7 @@ Logical_volumes.push_back(shFaWTube1_1);
 // Rear Flange
 
 
-G4Cons* shFaWTube1_2cone = new G4Cons("shFaWTube1_2cone", rInFaWTube1C1, rOuFaWTube1R, 
+G4Cons* shFaWTube1_2cone = new G4Cons("shFaWTube1_2cone", rInFaWTube1C1, rOuFaWTube1R,
 		                   rInFaWTube1C1, rOuFaWTube1R, dzFaWTube1R,
 				    angle0, angle360);
 
@@ -764,7 +810,8 @@ G4Cons* shFaWTube1_2cone = new G4Cons("shFaWTube1_2cone", rInFaWTube1C1, rOuFaWT
 G4LogicalVolume* shFaWTube1_2 = new G4LogicalVolume(shFaWTube1_2cone, kMedNiW, "shFaWTube1_2");
 
 Logical_volumes.push_back(shFaWTube1_2);
-
+volumes.push_back(shFaWTube1_2);
+names.push_back("shFaWTube1_2");
 
 //setting color
 
@@ -797,11 +844,14 @@ shFaWTube1_2->SetVisAttributes(aa);
 // Front Flange
 
 
- G4Cons* shFaWTube2_1cone = new G4Cons("shFaWTube2_1cone", rInFaWTube2F, rOuFaWTube2C1, 
+ G4Cons* shFaWTube2_1cone = new G4Cons("shFaWTube2_1cone", rInFaWTube2F, rOuFaWTube2C1,
 		                   rInFaWTube2F, rOuFaWTube2C1, dzFaWTube2F,
 				    angle0, angle360);
 
  G4LogicalVolume* shFaWTube2_1 = new G4LogicalVolume(shFaWTube2_1cone, kMedNiW, "shFaWTube2_1");
+
+ volumes.push_back(shFaWTube2_1);
+  names.push_back("shFaWTube2_1");
 
  Logical_volumes.push_back(shFaWTube2_1);
 
@@ -809,11 +859,14 @@ shFaWTube1_2->SetVisAttributes(aa);
 // Central part
 
 
-G4Cons* shFaWTube2_2cone = new G4Cons("shFaWTube2_2cone", rInFaWTube2C1, rOuFaWTube2C1, 
+G4Cons* shFaWTube2_2cone = new G4Cons("shFaWTube2_2cone", rInFaWTube2C1, rOuFaWTube2C1,
 		                   rInFaWTube2C2, rOuFaWTube2C2, dzFaWTube2C,
 				    angle0, angle360);
 
 G4LogicalVolume* shFaWTube2_2 = new G4LogicalVolume(shFaWTube2_2cone, kMedNiW, "shFaWTube2_2");
+
+volumes.push_back(shFaWTube2_2);
+  names.push_back("shFaWTube2_2");
 
 Logical_volumes.push_back(shFaWTube2_2);
 
@@ -839,24 +892,26 @@ G4double rOuFaWTube3C1 = 30.60*cm / 2.;
 G4double rOuFaWTube3C2 = 32.35*cm / 2.;
 
 
-G4Cons* voFaWTube3_cone = new G4Cons("voFaWTube3_cone", rInFaWTube3C1, rOuFaWTube3C1, 
+G4Cons* voFaWTube3_cone = new G4Cons("voFaWTube3_cone", rInFaWTube3C1, rOuFaWTube3C1,
 		                   rInFaWTube3C2, rOuFaWTube3C2, dzFaWTube3,
 				   angle0, angle360);
 
 
 G4LogicalVolume* voFaWTube3 = new G4LogicalVolume(voFaWTube3_cone, kMedNiW, "voFaWTube3");
+volumes.push_back(voFaWTube3);
+  names.push_back("voFaWTube3");
 
 Logical_volumes.push_back(voFaWTube3);
 
 //setting color
 voFaWTube3->SetVisAttributes(aa);
 
-// Pos 9	
+// Pos 9
 ///////////////////////////////////
   //    FA Tungsten Tube Part 4    //
   //    Drawing ALIP2A__0048       //
   ///////////////////////////////////
- 
+
 
  G4double dzFaWTube4 = 31.0*cm/2;
  G4double rInFaWTube4C1 = 13.23*cm / 2.;
@@ -865,11 +920,14 @@ voFaWTube3->SetVisAttributes(aa);
  G4double rOuFaWTube4C2 = 52.05*cm/ 2.;
 
 
-G4Cons* voFaWTube4_cone = new G4Cons("voFaWTube4_cone", rInFaWTube4C1, rOuFaWTube4C1, 
+G4Cons* voFaWTube4_cone = new G4Cons("voFaWTube4_cone", rInFaWTube4C1, rOuFaWTube4C1,
 		                   rInFaWTube4C2, rOuFaWTube4C2, dzFaWTube4,
 				    angle0, angle360);
 
 G4LogicalVolume* voFaWTube4 = new G4LogicalVolume(voFaWTube4_cone, kMedNiW, "voFaWTube4");
+volumes.push_back(voFaWTube4);
+names.push_back("voFaWTube4");
+
 
 Logical_volumes.push_back(voFaWTube4);
 
@@ -888,12 +946,16 @@ G4double rOuFaWTube5C1 = rOuFaWTube4C2;
 
 
 
-G4Cons* voFaWTube5_cone = new G4Cons("voFaWTube5_cone", rInFaWTube5C1, rOuFaWTube5C1, 
+G4Cons* voFaWTube5_cone = new G4Cons("voFaWTube5_cone", rInFaWTube5C1, rOuFaWTube5C1,
 		                   rInFaWTube5C2, rOuFaWTube5C1, dzFaWTube5,
 				   angle0, angle360);
 
 
 G4LogicalVolume* voFaWTube5 = new G4LogicalVolume(voFaWTube5_cone, kMedNiW, "voFaWTube5");
+volumes.push_back(voFaWTube5);
+ names.push_back("voFaWTube5");
+
+
 
 
 
@@ -920,29 +982,33 @@ G4LogicalVolume* voFaWTube5 = new G4LogicalVolume(voFaWTube5_cone, kMedNiW, "voF
  G4double rInFaGraphiteCone3 = 11.0*cm;
   // Ouer radius at the rear
  G4double rOuFaGraphiteCone3 = (zFa + 2*dzFaFlange + 2*dzFaGraphiteCone) * angle10;
-  
+
   // Straight section
-  
-  G4Cons* shFaGraphiteCone1_cone = new G4Cons("shFaGraphiteCone1_cone", rInFaGraphiteCone1,  rOuFaGraphiteCone1, 
+
+  G4Cons* shFaGraphiteCone1_cone = new G4Cons("shFaGraphiteCone1_cone", rInFaGraphiteCone1,  rOuFaGraphiteCone1,
 		                   rInFaGraphiteCone1, rOuFaGraphiteCone2, dzFaGraphiteConeS,
 				   angle0, angle360);
 
   G4LogicalVolume* shFaGraphiteCone1 = new G4LogicalVolume(shFaGraphiteCone1_cone, kMedCSh, "shFaGraphiteCone1");
+  volumes.push_back(shFaGraphiteCone1);
+  names.push_back("shFaGraphiteCone1");
 
- 
+
+
   Logical_volumes.push_back(shFaGraphiteCone1);
 
 
 // 2 deg opening cone
 
-G4Cons* shFaGraphiteCone2_cone  = new G4Cons("shFaGraphiteCone2_cone ", rInFaGraphiteCone2, rOuFaGraphiteCone2, 
+G4Cons* shFaGraphiteCone2_cone  = new G4Cons("shFaGraphiteCone2_cone ", rInFaGraphiteCone2, rOuFaGraphiteCone2,
 		                   rInFaGraphiteCone3, rOuFaGraphiteCone3, (dzFaGraphiteCone - dzFaGraphiteConeS),
 				   angle0, angle360);
 
 
 
 G4LogicalVolume* shFaGraphiteCone2 = new G4LogicalVolume(shFaGraphiteCone2_cone, kMedCSh, "shFaGraphiteCone2");
-
+volumes.push_back(shFaGraphiteCone2);
+ names.push_back("shFaGraphiteCone2");
 
 Logical_volumes.push_back(shFaGraphiteCone2);
 
@@ -976,19 +1042,19 @@ Logical_volumes.push_back(shFaGraphiteCone2);
 //Total length
   G4double dzFaPbCone = dzFaPbCone5 + dzFaPbCone10;
 
-	
+
  // 5 deg cone
-  G4Cons* shFaPbCone1_cone = new G4Cons("shFaPbCone1_cones", rInFaPbCone5, rOuFaPbCone5, 
+  G4Cons* shFaPbCone1_cone = new G4Cons("shFaPbCone1_cones", rInFaPbCone5, rOuFaPbCone5,
 		                   rInFaPbCone10, rOuFaPbCone10, dzFaPbCone5,
 				    angle0, angle360);
- 
+
   G4LogicalVolume* shFaPbCone1 = new G4LogicalVolume(shFaPbCone1_cone, kMedPb, "shFaPbCone1");
 
   Logical_volumes.push_back(shFaPbCone1);
-  
+
  // 10 deg cone
 
-  G4Cons* shFaPbCone2_cone = new G4Cons("shFaPbCone2_cone", rInFaPbCone10, rOuFaPbCone10, 
+  G4Cons* shFaPbCone2_cone = new G4Cons("shFaPbCone2_cone", rInFaPbCone10, rOuFaPbCone10,
 		                   rInFaPbConeE,  rOuFaPbConeE, dzFaPbCone10,
 				    angle0, angle360);
 
@@ -997,25 +1063,28 @@ Logical_volumes.push_back(shFaGraphiteCone2);
    Logical_volumes.push_back(shFaPbCone2);
 
 
-  
+
   G4AssemblyVolume* voFaPbCone = new G4AssemblyVolume();
 
   z = dzFaPbCone5;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaPbCone->AddPlacedVolume(shFaPbCone1, Tr);
+  volumes.push_back(shFaPbCone1);
+  names.push_back("shFaPbCone1");
 
   z += dzFaPbCone5 + dzFaPbCone10;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaPbCone->AddPlacedVolume(shFaPbCone2, Tr);
-  
+  volumes.push_back(shFaPbCone2);
+  names.push_back("shFaPbCone2");
 
 
   //setting color
 
    G4Colour  white   (1.0, 1.0, 1.0);
-  
+
   G4VisAttributes* leadCone = new G4VisAttributes(white);
   shFaPbCone1->SetVisAttributes(leadCone);
   shFaPbCone2->SetVisAttributes(leadCone);
@@ -1032,11 +1101,14 @@ Logical_volumes.push_back(shFaGraphiteCone2);
   G4double rInFaConcreteCone1 = 11.*cm;
   G4double rOuFaConcreteCone2 = rOuFaConcreteCone1 + 2*dzFaConcreteCone * angle10;
   G4double rInFaConcreteCone2 = rInFaConcreteCone1 + 2*dzFaConcreteCone * angle02;
- 
-  
+
+
  G4Cons* voFaConcreteCone_cone = new G4Cons("voFaConcreteCone_cone", rInFaConcreteCone1, rOuFaConcreteCone1, rInFaConcreteCone2, rOuFaConcreteCone2, dzFaConcreteCone, angle0, angle360);
 
  G4LogicalVolume* voFaConcreteCone = new G4LogicalVolume(voFaConcreteCone_cone, kMedConcSh, "voFaConcreteCone");
+
+  volumes.push_back(voFaConcreteCone);
+  names.push_back("voFaConcreteCone");
 
   Logical_volumes.push_back(voFaConcreteCone);
 
@@ -1053,13 +1125,15 @@ voFaConcreteCone->SetVisAttributes(red);
   G4double rInFaCH2Cone1 = 106.0*cm / 2.;
   G4double rInFaCH2Cone2 = 176.9*cm / 2.;
   G4double dFaCH2Cone = 7.5*cm / cos(10.*kDegRad);
- 
-  G4Cons* voFaCH2Cone_cone = new G4Cons("voFaCH2Cone_cone", rInFaCH2Cone1, (rInFaCH2Cone1 + dFaCH2Cone), 
+
+  G4Cons* voFaCH2Cone_cone = new G4Cons("voFaCH2Cone_cone", rInFaCH2Cone1, (rInFaCH2Cone1 + dFaCH2Cone),
 		                   rInFaCH2Cone2, (rInFaCH2Cone2 + dFaCH2Cone), dzFaCH2Cone,
 				    angle0, angle360);
 
 
   G4LogicalVolume* voFaCH2Cone = new G4LogicalVolume(voFaCH2Cone_cone, KmedCH2Sh, "voFaCH2Cone");
+  volumes.push_back(voFaCH2Cone);
+  names.push_back("voFaCH2Cone");
 
  Logical_volumes.push_back(voFaCH2Cone);
 
@@ -1084,13 +1158,15 @@ G4double rInFaSteelCone25B = rInFaSteelCone25A + 2*dzFaSteelCone25 * angle02;
 G4double rOuFaSteelCone25B = rOuFaSteelCone25A + 2*dzFaSteelCone25 * angle10;
 
 
-G4Cons* voFaSteelCone25_cone = new G4Cons("voFaSteelCone25_cone", (rInFaSteelCone25A + eps), (rOuFaSteelCone25A - eps), 
+G4Cons* voFaSteelCone25_cone = new G4Cons("voFaSteelCone25_cone", (rInFaSteelCone25A + eps), (rOuFaSteelCone25A - eps),
 		                   (rInFaSteelCone25B + eps), (rOuFaSteelCone25B - eps), dzFaSteelCone25,
 				    angle0, angle360);
 
 
-  
+
 G4LogicalVolume* voFaSteelCone25 = new G4LogicalVolume(voFaSteelCone25_cone, kMedSteel, "voFaSteelCone25");
+volumes.push_back(voFaSteelCone25);
+ names.push_back("voFaSteelCone25");
 
 Logical_volumes.push_back(voFaSteelCone25);
 
@@ -1116,12 +1192,14 @@ G4double rInFaSteelCone31B = rOuFaWTube4C2;
 G4double rOuFaSteelCone31B = rOuFaSteelCone31A + 2*dzFaSteelCone31 * angle10;
 
 
-G4Cons* voFaSteelCone31_cone = new G4Cons("voFaSteelCone31_cone", (rInFaSteelCone31A + eps), (rOuFaSteelCone31A - eps), 
+G4Cons* voFaSteelCone31_cone = new G4Cons("voFaSteelCone31_cone", (rInFaSteelCone31A + eps), (rOuFaSteelCone31A - eps),
 		                    (rInFaSteelCone31B + eps), (rOuFaSteelCone31B - eps), dzFaSteelCone31,
 				    angle0, angle360);
 
 
 G4LogicalVolume* voFaSteelCone31 = new G4LogicalVolume(voFaSteelCone31_cone, kMedSteel, "voFaSteelCone31");
+volumes.push_back(voFaSteelCone31);
+ names.push_back("voFaSteelCone31");
 
 Logical_volumes.push_back(voFaSteelCone31);
 
@@ -1144,13 +1222,13 @@ voFaSteelCone31->SetVisAttributes(SteelCone);
 
 
 
-  
+
   G4Cons* shFaCompRing1_cone = new G4Cons("shFaCompRing1_cone", rInFaCompRing1,  rOuFaCompRing1,rInFaCompRing1, rOuFaCompRing1, dzFaCompRing1, angle0, angle360);
 
   G4LogicalVolume* shFaCompRing1 = new G4LogicalVolume(shFaCompRing1_cone, kMedCSh, "shFaCompRing1");
-  
 
-  
+
+
   G4Cons* shFaCompRing2_cone = new G4Cons("shFaCompRing2_cone", rInFaCompRing2,  rOuFaCompRing2,rInFaCompRing2, rOuFaCompRing2, dzFaCompRing2, angle0, angle360);
 
   G4LogicalVolume* shFaCompRing2 = new G4LogicalVolume(shFaCompRing2_cone, kMedCSh, "shFaCompRing2");
@@ -1163,17 +1241,21 @@ voFaSteelCone31->SetVisAttributes(SteelCone);
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaCompRing->AddPlacedVolume(shFaCompRing1, Tr);
-  
+  volumes.push_back(shFaCompRing1);
+ names.push_back("shFaCompRing1");
+
   // 2nd section
   z += dzFaCompRing1 + dzFaCompRing2;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaCompRing->AddPlacedVolume(shFaCompRing2, Tr);
-  
+  volumes.push_back(shFaCompRing2);
+  names.push_back("shFaCompRing2");
+
 
  //setting color
 shFaCompRing1->SetVisAttributes(SteelCone);
-shFaCompRing2->SetVisAttributes(SteelCone); 
+shFaCompRing2->SetVisAttributes(SteelCone);
 
 
 ///////////////////////////////////
@@ -1206,7 +1288,7 @@ shFaCompRing2->SetVisAttributes(SteelCone);
 
   G4LogicalVolume* shFaMgRing3 = new G4LogicalVolume(shFaMgRing3_cone, kMedMg, "shFaMgRing3");
 
- 
+
   G4Cons* shFaMgRing4_cone = new G4Cons("shFaMgRing4_cone", rInFaMgRingO, rInFaCompRing2,rInFaMgRingO, rInFaCompRing2, dzFaMgRingO, angle0, angle360);
 
   G4LogicalVolume* shFaMgRing4 = new G4LogicalVolume(shFaMgRing4_cone, kMedMg, "shFaMgRing4");
@@ -1220,28 +1302,35 @@ shFaCompRing2->SetVisAttributes(SteelCone);
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaMgRing->AddPlacedVolume(shFaMgRing1, Tr);
-  
+  volumes.push_back(shFaMgRing1);
+  names.push_back("shFaMgRing1");
+
   // 2nd section
   z += dzFaMgRingO + (dzFaMgRingI / 2.);
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
   voFaMgRing->AddPlacedVolume(shFaMgRing2, Tr);
-  
+  volumes.push_back(shFaMgRing2);
+  names.push_back("shFaMgRing2");
   // 3rd section
 
   z += (dzFaMgRingI / 2.) + (dzFaMgRingI / 2.);
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
-  voFaMgRing->AddPlacedVolume(shFaMgRing3, Tr);  
-  
+  voFaMgRing->AddPlacedVolume(shFaMgRing3, Tr);
+  volumes.push_back(shFaMgRing3);
+  names.push_back("shFaMgRing3");
+
   // 4th section
 
   z += (dzFaMgRingI / 2.) + dzFaMgRingO;
   Ta.setZ(z);
   Tr = G4Transform3D(Ra,Ta);
-  voFaMgRing->AddPlacedVolume(shFaMgRing4, Tr);  
+  voFaMgRing->AddPlacedVolume(shFaMgRing4, Tr);
+  volumes.push_back(shFaMgRing4);
+  names.push_back("shFaMgRing4");
 
-  
+
 
 //setting color
 shFaMgRing1->SetVisAttributes(copperVisAttributes);
@@ -1261,7 +1350,7 @@ G4AssemblyVolume* voFaAccM = new G4AssemblyVolume();
 z = dzFaGraphiteConeS;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
-voFaAccM->AddPlacedVolume(shFaGraphiteCone1, Tr); 
+voFaAccM->AddPlacedVolume(shFaGraphiteCone1, Tr);
 
 z = z + dzFaGraphiteConeS + (dzFaGraphiteCone - dzFaGraphiteConeS);
 Ta.setZ(z);
@@ -1272,7 +1361,7 @@ z = z + (dzFaGraphiteCone - dzFaGraphiteConeS) + dzFaConcreteCone;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaAccM->AddPlacedVolume(voFaConcreteCone, Tr);
- 
+
 z = z+ dzFaConcreteCone + dzFaSteelCone25;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
@@ -1303,17 +1392,17 @@ Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaInnerShield->AddPlacedVolume(shFaWTube2_1, Tr);
 
-z+= dzFaWTube2F + dzFaWTube2C; 
+z+= dzFaWTube2F + dzFaWTube2C;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaInnerShield->AddPlacedVolume(shFaWTube2_2, Tr);
 
-z+= dzFaWTube2C + dzFaWTube3; 
+z+= dzFaWTube2C + dzFaWTube3;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaInnerShield->AddPlacedVolume(voFaWTube3, Tr);
 
-z+= dzFaWTube3 + dzFaWTube4; 
+z+= dzFaWTube3 + dzFaWTube4;
 Ta.setZ(z);
 Tr = G4Transform3D(Ra,Ta);
 voFaInnerShield->AddPlacedVolume(voFaWTube4, Tr);
@@ -1321,7 +1410,7 @@ voFaInnerShield->AddPlacedVolume(voFaWTube4, Tr);
 
 //Position of volumes in world
 
-G4double voFaAccM_z = zFa + 2*dzFaFlange - mag_position; 
+G4double voFaAccM_z = zFa + 2*dzFaFlange - mag_position;
 
 G4double voFaInnerShield_z = zFa + 2*dzFaGraphiteConeS + 2*dzFaFlange - mag_position;
 
@@ -1341,7 +1430,7 @@ G4double voFaSteelEnvelope_z = zFa + 2*dzFaWPlate - mag_position;
 //G4double shFaSteelEnvelopeT = ... (Onde...)
 
 
-G4double voFaPbCone_z = voFaSteelEnvelope_z + 2*dzSteelEnvelopeFC; 
+G4double voFaPbCone_z = voFaSteelEnvelope_z + 2*dzSteelEnvelopeFC;
 
 
 G4double voFaCH2Cone_z = voFaPbCone_z + 2*dzFaPbCone + dzFaCH2Cone ;
@@ -1358,7 +1447,7 @@ G4double voFaMgRing_z = zFa - mag_position;
 
 
 //--------------STRUCTURE SECTION ----------------------------------
- 
+
 build_abs = true;
 //build_abs = false;
 
@@ -1374,37 +1463,70 @@ Tr = G4Transform3D(Ra,Ta);
 voFaAccM->MakeImprint(logicMag, Tr);
 
 
+physic_names.push_back("av_1_impr_1_shFaSteelEnvelopeC1_pv_0");
+physic_names.push_back("av_1_impr_1_shFaSteelEnvelopeC2_pv_1");
+physic_names.push_back("av_1_impr_1_shFaSteelEnvelopeC3_pv_2");
+physic_names.push_back("av_1_impr_1_shFaSteelEnvelopeC4_pv_3");
+
 Ta.setZ(voFaInnerShield_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaInnerShield->MakeImprint(logicMag, Tr);
+physic_names.push_back("av_2_impr_1_flange_pv_1");
+physic_names.push_back("av_2_impr_1_shFaFlange1_pv_0");
+
 
 Ta.setZ(voFaSteelEnvelope_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaSteelEnvelope->MakeImprint(logicMag, Tr);
 
+physic_names.push_back("av_3_impr_1_shFaWPlateA1_pv_0");
+physic_names.push_back("av_3_impr_1_shFaWPlateA2_pv_1");
+physic_names.push_back("av_3_impr_1_shFaWPlateA3_pv_2");
+physic_names.push_back("av_3_impr_1_shFaWPlateA4_pv_3");
+
+
 Ta.setZ(voFaWPlateteA_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaWPlateteA->MakeImprint(logicMag, Tr);
+physic_names.push_back("av_4_impr_1_shFaPbCone1_pv_0");
+physic_names.push_back("av_4_impr_1_shFaPbCone2_pv_1");
+
 
 Ta.setZ(voFaFlange_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaFlange->MakeImprint(logicMag, Tr);
+physic_names.push_back("av_5_impr_1_shFaCompRing1_pv_0");
+physic_names.push_back("av_5_impr_1_shFaCompRing2_pv_1");
 
 Ta.setZ(voFaPbCone_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaPbCone->MakeImprint(logicMag, Tr);
 
+physic_names.push_back("av_6_impr_1_shFaMgRing1_pv_0");
+physic_names.push_back("av_6_impr_1_shFaMgRing2_pv_1");
+physic_names.push_back("av_6_impr_1_shFaMgRing3_pv_2");
+physic_names.push_back("av_6_impr_1_shFaMgRing4_pv_3");
 
 Ta.setZ(voFaCompRing_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaCompRing->MakeImprint(logicMag, Tr);
 
+physic_names.push_back("av_7_impr_1_shFaGraphiteCone1_pv_0");
+physic_names.push_back("av_7_impr_1_shFaGraphiteCone2_pv_1");
+physic_names.push_back("av_7_impr_1_voFaConcreteCone_pv_2");
+physic_names.push_back("av_7_impr_1_voFaSteelCone25_pv_3");
+physic_names.push_back("av_7_impr_1_voFaSteelCone31_pv_4");
 
 Ta.setZ(voFaMgRing_z);
 Tr = G4Transform3D(Ra,Ta);
 voFaMgRing->MakeImprint(logicMag, Tr);
 
-
+physic_names.push_back("av_8_impr_1_shFaFaWTube1_1_pv_0");
+physic_names.push_back("av_8_impr_1_shFaFaWTube1_2_pv_1");
+physic_names.push_back("av_8_impr_1_shFaFaWTube2_1_pv_2");
+physic_names.push_back("av_8_impr_1_shFaFaWTube2_2_pv_3");
+physic_names.push_back("av_8_impr_1_shFaFaWTube3_pv_4");
+physic_names.push_back("av_8_impr_1_shFaFaWTube4_pv_5");
 
 new G4PVPlacement(0,
 		 G4ThreeVector(0, 0,voFaCH2Cone_z),
@@ -1414,7 +1536,7 @@ new G4PVPlacement(0,
 		 false,
 		 1, checkOverlaps);
 
-
+physic_names.push_back("shFaGraphiteCone1");
 
 new G4PVPlacement(0,
 		 G4ThreeVector(0, 0,voFaEndPlate_z),
@@ -1424,7 +1546,7 @@ new G4PVPlacement(0,
 		 false,
 		 1, checkOverlaps);
 
-
+physic_names.push_back("voFaEndPlate");
 
 new G4PVPlacement(0,
 		 G4ThreeVector(0, 0,voFaWTube5_z),
@@ -1434,11 +1556,24 @@ new G4PVPlacement(0,
 		 false,
 		 1, checkOverlaps);
 
-
+physic_names.push_back("voFaWTube5");
 
 }
 
 
+
+
+
+if (aRegion) delete aRegion;
+for (G4int i=0; i<(physic_names.size()); i++){
+    aRegion = new G4Region(physic_names[i]);
+     //G4ProductionCuts* cuts = new G4ProductionCuts
+     //cuts->SetProductionCut(0.1*cm);
+     //aRegion->SetProductionCuts(cuts);
+     volumes[i]->SetRegion(aRegion);
+     aRegion->AddRootLogicalVolume(volumes[i]);
+
+}
 
 
 
@@ -1565,9 +1700,54 @@ G4cout << "!!!!!!!!!Funfando!!!!!!" << G4endl;
 
 }
 
+//nOfStep, volumeFlux, nOfCollision, nOfSecondary, passageCellFlux, passageTrackLength, population
+
+void B1DetectorConstruction::SetupConstructor() {
+    G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
+    G4String filterName, particleName;
+    //change
+    G4SDParticleFilter* gammaFilter = new G4SDParticleFilter(filterName="gammaFilter",particleName="gamma");
+ // declaring the camaras as MultiFunctionalDetector scorers
+  for(G4int i=0;i<volumes.size();i++) {
+    G4String detName = names[i];
+    G4MultiFunctionalDetector* det = new G4MultiFunctionalDetector(detName);
+    G4SDManager::GetSDMpointer()->AddNewDetector(det);
+    G4VPrimitiveScorer* primitive;
+    //passageCellFluxcell
+    primitive = new G4PSPopulation("pop");
+    det->RegisterPrimitive(primitive);
+    //population
+    primitive = new G4PSPassageCellCurrent("passCell");
+  //  primitive->SetFilter(gammaFilter);
+    det->RegisterPrimitive(primitive);
+    //nOfStep
+    primitive = new G4PSNofStep("nOfStep");
+  //  primitive->SetFilter(gammaFilter);
+    det->RegisterPrimitive(primitive);
+    //G4PSnOfCollision
+    primitive = new G4PSNofCollision("nOfCollision");
+    //primitive->SetFilter(gammaFilter);
+    det->RegisterPrimitive(primitive);
+    //nOfSecondary
+    primitive = new G4PSNofSecondary("nOfSecondary");
+    //primitive->SetFilter(gammaFilter);
+    det->RegisterPrimitive(primitive);
+    //GPassageTrackLength
+    primitive = new G4PSPassageTrackLength("passageTrackLength");
+    //primitive->SetFilter(gammaFilter);
+    det->RegisterPrimitive(primitive);
+    //Volumeflux
+
+
+    det->RegisterPrimitive(primitive);
+    SetSensitiveDetector(volumes[i], det);
+ }
+
+}
+
 void B1DetectorConstruction::ConstructSDandField() {
   //creating uniform magnetic field
-  
+
     G4MagneticField* magField = new G4UniformMagField(G4ThreeVector(0.,0.,-.5*tesla));
     G4FieldManager* FieldMgr  =new G4FieldManager(magField);
     if (build_magnetic) {
@@ -1577,7 +1757,7 @@ void B1DetectorConstruction::ConstructSDandField() {
         G4cout << "magnetic field disabled" << G4endl;
     }
 
-  
+    SetupConstructor();
 
 
 }

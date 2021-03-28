@@ -29,6 +29,8 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
  
     virtual void ConstructSDandField();
     /// Add magnetic field to a specific logical volume.
+
+    void SetupConstructor();
   
     virtual G4VPhysicalVolume* Construct();
     
@@ -40,9 +42,14 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
  
     std::vector<G4LogicalVolume* > GetVolumes() const {return Logical_volumes;}
     /** Put all Logical volume in a vector */    
+    G4int getNV() const {return names.size();}
 
     G4int getNumDetec() const {return num_detec;}
    /** Get the number of detectors */
+
+
+   std::vector<G4String> GetNames() const {return names;}
+   std::vector<G4String> GetPhyNames() const {return physic_names;}
 
   protected:
     G4LogicalVolume*  fScoringVolume1;
@@ -50,10 +57,13 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
     G4int num_detec;
     G4LogicalVolume* fScoringVolume2;
     std::vector<G4LogicalVolume *> Logical_volumes;
+    std::vector<G4LogicalVolume *> volumes;
+    std::vector<G4String> names;
+    std::vector<G4String> physic_names;
     G4LogicalVolume* logicMag;
     G4LogicalVolume* logicWorld;
     G4bool build_magnetic;
-
+    G4Region* aRegion;
 
 };
     

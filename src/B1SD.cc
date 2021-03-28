@@ -46,7 +46,7 @@ const G4VPhysicalVolume* thePostVL = step->GetPostStepPoint()->GetPhysicalVolume
 	
 //Checa se a partícula é repetida
 if (thePreVL->GetStepStatus() == fGeomBoundary && track == 1) {
-          
+        
       B1Hits* hit = new B1Hits();
       hit->set_partdef(particle_name);
       hit->set_energy(particle_energy);

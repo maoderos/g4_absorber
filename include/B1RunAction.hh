@@ -10,11 +10,10 @@
 #include "globals.hh"
 #include <G4Timer.hh>
 #include <vector>
+#include "G4Run.hh"
 
-class G4Run;
-
-
-
+class B1Run;
+class B1DetectorConstruction;
 
 using namespace std;
 /// Run action class
@@ -23,10 +22,10 @@ class B1RunAction : public G4UserRunAction
   public:
     B1RunAction();
     virtual ~B1RunAction();
-
+    G4Run* GenerateRun();
     // virtual G4Run* GenerateRun();
     virtual void BeginOfRunAction(const G4Run*);
-    virtual void   EndOfRunAction(const G4Run*);
+    virtual void EndOfRunAction(const G4Run*);
 
     void add_number_of_event(G4int detec_id);
     /// add nEvent value in vector
