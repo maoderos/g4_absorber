@@ -24,15 +24,18 @@ public:
   G4double GetNofCollision(G4int i) const {return GetTotal(fMapSum[i][3]);}
   G4double GetNofSecondary(G4int i) const {return GetTotal(fMapSum[i][4]);}
   G4double GetPassageTrackLength(G4int i) const {return GetTotal(fMapSum[i][5]);}
-
+  G4double GetCellFlux(G4int i) const {return GetTotal(fMapSum[i][6]);}
+  G4double GetPassageCellFlux(G4int i) const {return GetTotal(fMapSum[i][7]);}
+  G4double GetCylinderSurfaceCurrent(G4int i) const {return GetTotal(fMapSum[i][8]);}
+  G4double GetTermination(G4int i) const {return GetTotal(fMapSum[i][9]);}
   private:
   G4double GetTotal(const G4THitsMap<G4double> &map) const;
   //G4double FindMinimum(const G4THitsMap<G4double> &map) const;
 
 
 
-  G4THitsMap<G4double> fMapSum[43][2];
-  G4int fColIDSum[43][2];
+  G4THitsMap<G4double> fMapSum[43][9];
+  G4int fColIDSum[43][9];
 
 };
 

@@ -61,7 +61,6 @@ void B1RunAction::BeginOfRunAction(const G4Run*)
   n_of_mu_plus = 0.;
   n_of_mu_minus = 0.;
 
-
   const B1DetectorConstruction* detectorConstruction
    = static_cast<const B1DetectorConstruction*>
      (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
@@ -73,10 +72,45 @@ void B1RunAction::BeginOfRunAction(const G4Run*)
        num_event_detec.push_back(0);
 }
 
+const B1PrimaryGeneratorAction* generatorAction
+ = static_cast<const B1PrimaryGeneratorAction*>
+   (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+G4String runCondition;
+
+G4double angle_a;
+if (generatorAction)
+{
+  const G4ParticleGun* particleGun = generatorAction->GetParticleGun();
+  runCondition += particleGun->GetParticleDefinition()->GetParticleName();
+  runCondition += " of ";
+  G4double particleEnergy = particleGun->GetParticleEnergy();
+  G4double x = particleGun->GetParticleMomentumDirection().x();
+  G4double y = particleGun->GetParticleMomentumDirection().y();
+  G4double z = particleGun->GetParticleMomentumDirection().z();
+
+  runCondition += G4BestUnit(particleEnergy,"Energy");
+
+ #define PI 3.14159265
+  G4double angle_a = acos((z/sqrt(x*x+y*y+z*z)))*180/PI;
+  G4double angle = acos((z/sqrt(x*x+y*y+z*z)));
+  G4double P = particleGun->GetParticleMomentum()/GeV;
+  G4double Pz = P*cos(angle);
+
+
+ std::stringstream energy_k;
+ std::stringstream angle_b;
+ angle_b << std::setprecision(4) << angle_a;
+ energy_k << std::setprecision(4) << Pz;
+
+ alpha = angle_b.str();
+ gunEnergy = energy_k.str();
+
+}
+
 
   timer = new G4Timer();
   timer->Start();
-;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -88,7 +122,6 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
 
 
   G4int nofEvents = run->GetNumberOfEvent();
-  if (nofEvents == 0) return;
 
   // Merge accumulables
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
@@ -117,17 +150,8 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
     runCondition += particleGun->GetParticleDefinition()->GetParticleName();
     runCondition += " of ";
     G4double particleEnergy = particleGun->GetParticleEnergy();
-    G4double x = particleGun->GetParticleMomentumDirection().x();
-    G4double y = particleGun->GetParticleMomentumDirection().y();
-    G4double z = particleGun->GetParticleMomentumDirection().z();
 
     runCondition += G4BestUnit(particleEnergy,"Energy");
-
-   #define PI 3.14159265
-    angle_a = acos((z/sqrt(x*x+y*y+z*z)))*180/PI;
-
-   G4cout << nEvent << G4endl;
-
 
   }
 
@@ -169,7 +193,6 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
   for(G4int i=0;i<N;i++) {
       G4String CIname = names[i];
       detName[i] = CIname;
-      G4cout << detName[i] << G4endl;
   }
 
   G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
@@ -186,8 +209,8 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
       G4cout << " Population in an event :" << G4endl << "   "
       << " Poputation in CI " << i << ": " << (theRun->GetPopulation(i))/nEvt
       << G4endl;
-      G4cout << " Passage cells flux  :" << G4endl << "   "
-      << " Passage Cells in Flux " << i << ": " << (theRun->GetPassageCell(i))/nEvt
+      G4cout << " Passage cells Current  :" << G4endl << "   "
+      << " Passage Cells in Current " << i << ": " << (theRun->GetPassageCell(i))/nEvt
       << G4endl;
       G4cout << " N of Step:  " << i << ": " << (theRun->GetNofStep(i))/nEvt
       << G4endl;
@@ -195,7 +218,15 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
       << G4endl;
       G4cout << " n of Secondary " << i << ": " << (theRun->GetNofSecondary(i))/nEvt
       << G4endl;
-      G4cout << " Passage Track length " << i << ": " << (theRun->GetPassageTrackLength(i))/nEvt
+      G4cout << " Trackcounter " << i << ": " << (theRun->GetPassageTrackLength(i))/nEvt
+      << G4endl;
+      G4cout << " Cell flux " << i << ": " << (theRun->GetCellFlux(i))/nEvt
+      << G4endl;
+      G4cout << " Passage Cell flux " << i << ": " << (theRun->GetPassageCellFlux(i))/nEvt
+      << G4endl;
+      G4cout << " CylinderSurfaceCurrent " << i << ": " << (theRun->GetCylinderSurfaceCurrent(i))/nEvt
+      << G4endl;
+      G4cout << " G4PSTermination " << i << ": " << (theRun->GetTermination(i))/nEvt
       << G4endl;
       G4cout << "----------------------------------------------------------------------------------------" << G4endl;
 

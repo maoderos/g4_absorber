@@ -42,13 +42,76 @@
 #include "G4Region.hh"
 #include "G4ScoringManager.hh"
 #include "G4PSPassageCellFlux.hh"
+#include "G4PSCellFlux.hh"
 #include "G4PSPassageTrackLength.hh"
 #include "G4ScoringManager.hh"
 #include "G4PSNofStep.hh"
 #include "G4PSNofCollision.hh"
 #include "G4PSNofSecondary.hh"
-//#include "G4PSVolumeFlux.hh"
+#include "G4PSTrackCounter.hh"
+#include "G4PSTrackCounter3D.hh"
+#include "G4PSTermination.hh"
+#include "G4PSTermination3D.hh"
+//#include "G4PSNofTerminatedTrack.hh"
+#include "G4PSCylinderSurfaceFlux3D.hh"
+#include "G4PSCylinderSurfaceFlux.hh"
 #include <cmath>
+
+
+#include "G4PSCellCharge.hh"
+#include "G4PSCellFlux.hh"
+#include "G4PSCellFlux3D.hh"
+#include "G4PSCellFluxForCylinder3D.hh"
+#include "G4PSCylinderSurfaceCurrent.hh"
+#include "G4PSCylinderSurfaceCurrent3D.hh"
+#include "G4PSCylinderSurfaceFlux.hh"
+#include "G4PSCylinderSurfaceFlux3D.hh"
+#include "G4PSDirectionFlag.hh"
+#include "G4PSDoseDeposit.hh"
+#include "G4PSDoseDeposit3D.hh"
+#include "G4PSDoseDepositForCylinder3D.hh"
+#include "G4PSEnergyDeposit.hh"
+#include "G4PSEnergyDeposit3D.hh"
+#include "G4PSFlatSurfaceCurrent.hh"
+#include "G4PSFlatSurfaceCurrent3D.hh"
+#include "G4PSFlatSurfaceFlux.hh"
+#include "G4PSMinKinEAtGeneration.hh"
+#include "G4PSMinKinEAtGeneration3D.hh"
+#include "G4PSNofCollision.hh"
+#include "G4PSNofCollision3D.hh"
+#include "G4PSNofSecondary.hh"
+#include "G4PSNofSecondary3D.hh"
+#include "G4PSNofStep.hh"
+#include "G4PSNofStep3D.hh"
+#include "G4PSPassageCellCurrent.hh"
+#include "G4PSPassageCellCurrent3D.hh"
+#include "G4PSPassageCellFlux.hh"
+#include "G4PSPassageCellFlux3D.hh"
+#include "G4PSPassageCellFluxForCylinder3D.hh"
+#include "G4PSPassageTrackLength.hh"
+#include "G4PSPassageTrackLength3D.hh"
+#include "G4PSPopulation.hh"
+#include "G4PSPopulation3D.hh"
+#include "G4PSSphereSurfaceCurrent.hh"
+#include "G4PSSphereSurfaceCurrent3D.hh"
+#include "G4PSSphereSurfaceFlux.hh"
+#include "G4PSSphereSurfaceFlux3D.hh"
+#include "G4PSStepChecker.hh"
+#include "G4PSStepChecker3D.hh"
+#include "G4PSTermination.hh"
+#include "G4PSTermination3D.hh"
+#include "G4PSTrackCounter.hh"
+#include "G4PSTrackCounter3D.hh"
+#include "G4PSTrackLength.hh"
+#include "G4PSTrackLength3D.hh"
+#include "G4SDChargedFilter.hh"
+#include "G4SDKineticEnergyFilter.hh"
+#include "G4SDNeutralFilter.hh"
+#include "G4SDParticleFilter.hh"
+#include "G4SDParticleWithEnergyFilter.hh"
+
+
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -110,7 +173,7 @@ G4VPhysicalVolume* B1DetectorConstruction::Construct()
 //Area with magnetic field
 G4double mag_position = 4*m;
 G4Box* solidMag =
-    new G4Box("World",                       //its name
+    new G4Box("World_mag",                       //its name
       3*m, 3*m, mag_position);
 
     logicMag =
@@ -1588,7 +1651,7 @@ G4double detec_length = 2.5*micrometer;
 
 G4Tubs* detec_tub2 = new G4Tubs("detec_tubs2", rInFaWTube5C2, rOuSteelEnvelopeR2, detec_length/2, 0.*deg,360.*deg);
 
-G4LogicalVolume* detec_volume2 = new G4LogicalVolume(detec_tub2, world_mat, "detec");
+G4LogicalVolume* detec_volume2 = new G4LogicalVolume(detec_tub2, world_mat, "SD2");
 
 G4double detec_z2 = zFa + (dzFa + 2*dzEndPlate) + 1*micrometer - mag_position + detec_length;
 
@@ -1631,7 +1694,7 @@ G4double detec_z22 = detec_z2 + detec_length;
 
 
 G4Tubs* detec_tub1 = new G4Tubs("detec_tubs1", rInFaMgRingO, rOuFaQPlateF, detec_length/2, 0.*deg,360.*deg);
-G4LogicalVolume* detec_volume12 = new G4LogicalVolume(detec_tub1, world_mat, "detec2");
+G4LogicalVolume* detec_volume12 = new G4LogicalVolume(detec_tub1, world_mat, "SD1");
 G4double detec_z1 = zFa - 1*micrometer - mag_position - detec_length;
 
 
@@ -1733,11 +1796,23 @@ void B1DetectorConstruction::SetupConstructor() {
     //primitive->SetFilter(gammaFilter);
     det->RegisterPrimitive(primitive);
     //GPassageTrackLength
-    primitive = new G4PSPassageTrackLength("passageTrackLength");
+    primitive = new G4PSTrackCounter("Trackcounter", -1, 0);
     //primitive->SetFilter(gammaFilter);
     det->RegisterPrimitive(primitive);
-    //Volumeflux
-
+    //cellFlux
+    primitive = new G4PSCellFlux("cellFlux");
+    det->RegisterPrimitive(primitive);
+    //passageCellFlux
+    primitive = new G4PSPassageCellFlux("passageCellFlux");
+    det->RegisterPrimitive(primitive);
+    //nOfTrack
+    primitive = new G4PSFlatSurfaceFlux("cylinder", -1,0);
+    det->RegisterPrimitive(primitive);
+    //primitive = new G4PSnOfTerminatedTrack("NofTerminatedTrack");
+    //det->RegisterPrimitive(primitive);
+    //Termination
+    primitive = new G4PSTermination("termination",0);
+    det->RegisterPrimitive(primitive);
 
     det->RegisterPrimitive(primitive);
     SetSensitiveDetector(volumes[i], det);

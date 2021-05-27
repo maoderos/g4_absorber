@@ -3,15 +3,16 @@ import math
 pz0= 25 
 pz1= 100 
 phi = [45,60,90] 
-n = 50
-
-particle = ["mu+", "mu-"]
+n = 15000
+particle = ["mu+"]
 
 
 
 def write_file(data,ang1):
    #já escreve o inicializador
+   linha00 = "/run/numberOfThreads {0}".format(n_processors) 
    linha0 = "/run/initialize"
+   data.write(linha00 + "\n")
    data.write(linha0+"\n")
    #começa a calcular os valores
    ang = [30,50,70,90]

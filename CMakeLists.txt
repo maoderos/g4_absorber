@@ -52,9 +52,9 @@ set(EXAMPLEB1_SCRIPTS
   /plus2/readme.txt
   /minus1/readme.txt
   /minus2/readme.txt
+  /data_volumes/contagem.sh
+  /data_volumes/estruturaEntradaSaida_u.sh
   analisys.py
-  plot_b.py
-  fit.py
   escrever.py
   )
 

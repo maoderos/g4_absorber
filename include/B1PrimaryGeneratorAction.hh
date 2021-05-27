@@ -12,6 +12,7 @@
 class G4ParticleGun;
 class G4Event;
 class G4Box;
+class B1PrimaryGeneratorAction;
 
 /// The primary generator action class with particle gun. The default energy is 1 GeV mu+
 class B1PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction

@@ -27,8 +27,9 @@ B1Run::B1Run()
 
   }
 
-  G4String primNameSum[6]
-    = {"pop","passCell","nOfStep","nOfCollision","nOfSecondary","passageTrackLength"};
+  G4String primNameSum[10]
+    = {"pop","passCell","nOfStep","nOfCollision","nOfSecondary","Trackcounter", "cellFlux",
+        "passageCellFlux","cylinder","termination"};
 
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   G4String fullName;
@@ -36,7 +37,7 @@ B1Run::B1Run()
   size_t i,j;
   for(i=0;i<N;i++)
   {
-    for(j=0;j<6;j++)
+    for(j=0;j<9;j++)
     {
       fullName = detName[i]+"/"+primNameSum[j];
       fColIDSum[i][j] = SDMan->GetCollectionID(fullName);
@@ -76,7 +77,7 @@ void B1Run::RecordEvent(const G4Event* evt)
   size_t i,j;
   for(i=0;i<N;i++)
   {
-    for(j=0;j<6;j++)
+    for(j=0;j<9;j++)
     {
       G4THitsMap<G4double>* evtMap
         = (G4THitsMap<G4double>*)(HCE->GetHC(fColIDSum[i][j]));
@@ -98,7 +99,7 @@ void B1Run::Merge(const G4Run * aRun) {
   const B1Run * localRun = static_cast<const B1Run *>(aRun);
   size_t i,j;
   for(i = 0; i <N; i++) {
-    for(j = 0; j <6; j++) {
+    for(j = 0; j <9; j++) {
       fMapSum[i][j] += localRun->fMapSum[i][j];
     }
   }

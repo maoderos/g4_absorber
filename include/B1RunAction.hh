@@ -33,17 +33,21 @@ class B1RunAction : public G4UserRunAction
     /// increase 1 in nEvent variable
     G4int get_n_event(G4int detec_id) {
         ///get the number of the event to store in the output file
-        return num_event_detec[detec_id];	
+        return num_event_detec[detec_id];
        // G4cout << num << G4endl;
        }
+
+    G4String get_alpha(){return alpha;};
+    G4String get_energy(){return gunEnergy;};
     G4Timer* timer;
   private:
-    
+
     G4int nEvent;
     G4double n_of_mu_plus;
     G4double  n_of_mu_minus;
     std::vector<G4int >num_event_detec;
+    G4String alpha;
+    G4String gunEnergy;
 };
 
 #endif
-

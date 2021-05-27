@@ -40,13 +40,14 @@ void B1EventAction::BeginOfEventAction(const G4Event*)
 void B1EventAction::EndOfEventAction(const G4Event* event)
 {
 
-
+  
 
     fRunAction->add_event();
 
      double n_mu_p = 0.0;
      double n_mu_m = 0.0;
-
+  
+  /*
 
     const B1PrimaryGeneratorAction* generatorAction
    = static_cast<const B1PrimaryGeneratorAction*>
@@ -149,7 +150,7 @@ void B1EventAction::EndOfEventAction(const G4Event* event)
   }
 }
 
-
+/*
   /*
 
  for(G4int i=0; i < num; i++) {

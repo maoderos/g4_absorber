@@ -3,7 +3,7 @@
 /// \brief Definition of the B1SteppingAction class
 
 #ifndef B1SteppingAction_h
-#define B1SteppingAction_h 
+#define B1SteppingAction_h
 
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
@@ -11,14 +11,14 @@
 #include "G4TrackStatus.hh"
 
 class B1EventAction;
-
+class B1RunAction;
 class G4LogicalVolume;
 
 /// Stepping action class
 
 
-using namespace std;	
-///The stepping Action is used primary to kill the secondary particles to improve the time of run.  
+using namespace std;
+///The stepping Action is used primary to kill the secondary particles to improve the time of run.
 class B1SteppingAction : public G4UserSteppingAction
 {
   public:
@@ -27,7 +27,7 @@ class B1SteppingAction : public G4UserSteppingAction
 
     /// method from the base class
     virtual void UserSteppingAction(const G4Step*);
-    
+
 
   private:
     B1EventAction*  fEventAction;
