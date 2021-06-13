@@ -55,7 +55,6 @@ set(EXAMPLEB1_SCRIPTS
   /data_volumes/contagem.sh
   /data_volumes/estruturaEntradaSaida_u.sh
   analisys.py
-  escrever.py
   )
 
 foreach(_script ${EXAMPLEB1_SCRIPTS})
@@ -70,5 +69,3 @@ endforeach()
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS absorber DESTINATION bin)
-
-

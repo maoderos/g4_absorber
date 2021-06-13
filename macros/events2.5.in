@@ -1,0 +1,61 @@
+/run/initialize
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.07718237200901895 0.07718237200901894 2.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.09261884641082276 0.09261884641082274 3.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.10805532081262653 0.10805532081262652 3.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.12349179521443034 0.12349179521443032 4.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.13892826961623414 0.1389282696162341 4.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.1543647440180379 0.15436474401803787 5.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.16980121841984172 0.1698012184198417 5.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.1852376928216455 0.18523769282164548 6.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.2006741672234493 0.20067416722344927 6.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.21611064162525306 0.21611064162525304 7.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.23154711602705685 0.23154711602705683 7.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.24698359042886067 0.24698359042886064 8.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.26242006483066443 0.2624200648306644 8.5
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.2778565392324683 0.2778565392324682 9.0
+/run/beamOn 15000
+#2.5,45
+/gun/particle mu+
+/gun/momentum 0.293293013634272 0.29329301363427196 9.5
+/run/beamOn 15000

@@ -60,12 +60,14 @@ G4bool B1SD::ProcessHits(G4Step* step, G4TouchableHistory* ROhist) {
   const G4double alpha_degree  = alpha*(180/(3.14159265));
   const G4double P = particleGun->GetParticleMomentum();
   const G4double Pz = P*cos(alpha);
-	G4cout << "ppp" << G4endl;
+//	G4cout << "ppp" << G4endl;
 //Checa se a partícula é repetida
 if (thePreVL->GetStepStatus() == fGeomBoundary && track == 1) {
        // X,Y,Z,Px,Py,PZ,Pz0,alpha
        std::ofstream data("data_" + detec_name + ".dat",std::ios_base::app);
-       data << position.x()/(m) << "  " << position.y()/(m) << "  " << position.z()/(m) << " "  << energy/GeV << " " << momentum.x()/GeV << " " << momentum.y()/(GeV)<< " " <<  momentum.z()/(GeV) << " " << Pz/(GeV) << " " << alpha_degree <<"\n";
+       data << position.x()/(m) << "  " << position.y()/(m) << "  " << position.z()/(m) << " "
+                                << energy/GeV << " " << momentum.x()/GeV << " " << momentum.y()/(GeV)<< " "
+                                <<  momentum.z()/(GeV) << " " << Pz/(GeV) << " " << alpha_degree <<"\n";
        data.close();
 }
 

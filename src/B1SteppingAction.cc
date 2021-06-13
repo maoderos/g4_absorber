@@ -121,17 +121,19 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
  G4double MomentumDirectionY = track -> GetMomentumDirection().getY();
  G4double MomentumDirectionZ = track -> GetMomentumDirection().getZ();
  if(aStep->GetPostStepPoint()->GetStepStatus() != fGeomBoundary){
-   std::ofstream data("data_volumes/data_" + GunEnergy + "_" + alpha + ".txt",std::ios_base::app);
+   std::ofstream data("data_volumes/data_physics.txt",std::ios_base::app);
    data << EventID << " " << ParentID << " " << TrackID << " " << StepNumber << " "  << ProcessName1  << " " << ParticleName
            << " " << Position1X << " " << Position1Y << " " << Position1Z << " "
            << Position2X << " " << Position2Y << " " << Position2Z
-           << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
+           << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " "
+           << alpha << " " << GunEnergy << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
 
  }
 }
 }
 
-//PRONTO
+//PRONTO - SE PRECISAR APENAS DESCOMENTAR
+/*
 if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_impr_1_shFaSteelEnvelopeC2_pv_1"
 || log_volume == "av_1_impr_1_shFaSteelEnvelopeC3_pv_2"
 || log_volume == "av_1_impr_1_shFaSteelEnvelopeC4_pv_3" || log_volume == "av_2_impr_1_flange_pv_1"
@@ -243,7 +245,7 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
   }
 
 }
-
+*/
 
 }
 
