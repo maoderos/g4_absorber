@@ -1,3 +1,15 @@
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: EventAction
+//--------------------------------------------------
+
+
 #include "B1Hits.hh"
 
 #include "G4VVisManager.hh"
@@ -12,11 +24,6 @@
 #include "G4SystemOfUnits.hh"
 #include "G4ios.hh"
 
-
-
-
-/// \file B1Hits.cc
-/// \brief Implementarion of the B1Hits class. 
 B1Hits::B1Hits() {
 
 }

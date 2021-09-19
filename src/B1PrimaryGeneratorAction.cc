@@ -1,14 +1,21 @@
 
-//
-/// \file B1PrimaryGeneratorAction.cc
-/// \brief Implementation of the B1PrimaryGeneratorAction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: PrimaryGeneratorAction
+//--------------------------------------------------
 
 #include "B1PrimaryGeneratorAction.hh"
 
 #include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
 #include "G4Box.hh"
-#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"

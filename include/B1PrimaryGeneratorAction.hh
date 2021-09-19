@@ -1,6 +1,15 @@
 
-/// \file B1PrimaryGeneratorAction.hh
-/// \brief Definition of the B1PrimaryGeneratorAction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: PrimaryGeneratorAction
+//--------------------------------------------------
+
 
 #ifndef B1PrimaryGeneratorAction_h
 #define B1PrimaryGeneratorAction_h 1

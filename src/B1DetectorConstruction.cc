@@ -1,10 +1,18 @@
 
-/// \file B1DetectorConstruction.cc
-/// \brief Implementation of the B1DetectorConstruction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: DetectorConstruction
+//--------------------------------------------------
 
 #include "B1DetectorConstruction.hh"
 
-#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include "G4NistManager.hh"
 #include "G4Box.hh"
 #include "G4Cons.hh"
@@ -112,14 +120,15 @@
 
 
 
-
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1DetectorConstruction::B1DetectorConstruction()
 : G4VUserDetectorConstruction(),
   fScoringVolume1(0),
-  fScoringVolume2(0)
-{ }
+  fScoringVolume2(0), aRegion(0), detec_volume2(0), detec_volume1(0)
+{ 
+ DefineMaterials();
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -128,18 +137,160 @@ B1DetectorConstruction::~B1DetectorConstruction()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+
+void B1DetectorConstruction::DefineMaterials(){
+
+//-------- ABSORBER --------------
+ //materials
+
+  //Materiais from CERN model
+
+  std::vector<G4String> symbol = {"H", "He", "Li","Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba","La","Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu" ,"Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Ti", "Pb", "Bi"};
+
+
+ //Carbon Material
+
+ kMedCSh = new G4Material("ABSO_C_C2", 6.,  12.01*g/mole,  1.75*g/cm3);
+//matmgr.Material("ABSO", 46, "CARBON2$", 12.01, 6., 1.75, 24.4, 49.9);
+ G4cout << kMedCSh << G4endl;
+
+ //LEAD - Pb
+
+ kMedPb = new G4Material("ABSO_PB_C0", 82., 207.19*g/mole,11.35*g/cm3);
+ G4cout << kMedPb<< G4endl;
+ //matmgr.Material("ABSO", 53, "LEAD2$", 207.19, 82., 11.35, .56, 18.5);
+ //Air
+
+  std::vector<G4double> aAir = {12.0107*g/mole, 14.0067*g/mole, 15.9994*g/mole, 39.948*g/mole};
+  std::vector<G4double> zAir = {6., 7., 8., 18.};
+  std::vector<G4double> wAir = {0.000124, 0.755267, 0.231781, 0.012827};
+
+
+// Polyethylene
+  //
+  std::vector<G4double> apoly = {12.01*g/mole, 1.*g/mole};
+  std::vector<G4double> zpoly = {6., 1.};
+  std::vector<G4double> wpoly = {.33, .67};
+
+// Concrete
+  //
+  std::vector<G4double> aconc = {1.*g/mole, 12.01*g/mole, 15.994*g/mole, 22.99*g/mole, 24.305*g/mole, 26.98*g/mole, 28.086*g/mole, 39.1*g/mole, 40.08*g/mole, 55.85*g/mole};
+  std::vector<G4double> zconc = {1., 6., 8., 11., 12., 13., 14., 19., 20., 26.};
+  std::vector<G4double> wconc = {.01, .001, .529107, .016, .002, .033872, .337021, .013, .044, .014};
+//matmgr.Mixture("ABSO", 57, "CONCRETE2$", aconc, zconc, 2.35, 10, wconc);
+
+
+
+
+
+
+std::vector<G4Element *>conc;
+conc.reserve(aconc.size());
+
+ kMedConcSh = new G4Material("CONCRETE CC2", 2.35*g/cm3, aconc.size());
+
+
+for (std::size_t i = 0; i < aconc.size(); i++) {
+   G4String symb = symbol[int(zconc[i]) - 1];
+   conc[i] = new G4Element(("conc" + std::to_string(i)),symb,zconc[i], aconc[i]);
+   kMedConcSh->AddElement(conc[i], wconc[i]);
+   //G4cout << steel[i] << G4endl;
+
+}
+
+G4cout << kMedConcSh << G4endl;
+
+// Steel
+  //
+  std::vector<G4double> asteel = {55.847*g/mole, 51.9961*g/mole, 58.6934*g/mole, 28.0855*g/mole};
+  std::vector<G4double> zsteel = {26., 24., 28., 14.};
+  std::vector<G4double> wsteel = {.715, .18, .1, .005};
+//
+  std::vector<G4Element *>steel;
+  steel.reserve(asteel.size());
+
+  kMedSteel = new G4Material("STAINLESS STEEL0", 7.88*g/cm3, asteel.size());
+
+  for (std::size_t i = 0; i < asteel.size(); i++) {
+   G4String symb = symbol[int(zsteel[i]) - 1];
+   steel[i] = new G4Element(("Steel" + std::to_string(i)),symb,zsteel[i], asteel[i]);
+   kMedSteel->AddElement(steel[i], wsteel[i]);
+   //G4cout << steel[i] << G4endl;
+
+}
+
+ G4cout << kMedSteel << G4endl;
+
+ // Ni-Cu-W alloy
+  //
+  std::vector<G4double> aniwcu = {58.6934*g/mole, 183.84*g/mole, 63.546*g/mole};
+  std::vector<G4double> zniwcu = {28., 74., 29.};
+  std::vector<G4double> wniwcu = {0.015, 0.95, 0.035};
+
+  std::vector<G4Element *>Ni_Cu_W;
+  Ni_Cu_W.reserve(aniwcu.size());
+
+  kMedNiW = new G4Material("ABSO_Ni/W0", 18.78*g/cm3, aniwcu.size());
+
+  for (std::size_t i = 0; i < aniwcu.size(); i++) {
+   G4String symb = symbol[int(zniwcu[i]) - 1];
+   G4cout << symb << G4endl;
+   Ni_Cu_W[i] = new G4Element(("ABSO_Ni/W0" + std::to_string(i)),symb,zniwcu[i], aniwcu[i]);
+   kMedNiW->AddElement(Ni_Cu_W[i], wniwcu[i]);
+   //G4cout << steel[i] << G4endl;
+
+}
+
+
+  //
+  // Poly Concrete
+  //                      H     Li     F       C      Al     Si      Ca      Pb     O
+  std::vector<G4double> aPolyCc = {1.*g/mole, 6.941*g/mole, 18.998*g/mole, 12.01*g/mole, 26.98*g/mole, 28.086*g/mole, 40.078*g/mole, 207.2*g/mole, 15.999*g/mole};
+  std::vector<G4double> zPolyCc = {1., 3., 9., 6., 13., 14., 20., 82., 8.};
+  std::vector<G4double> wPolyCc = {4.9, 1.2, 1.3, 1.1, 0.15, 0.02, 0.06, 0.7, 1.1};
+  G4double wtot = 0;
+
+   for (G4int i = 0; i < 9; i++) {
+    wtot += wPolyCc[i];
+  }
+   for (G4int i = 0; i < 9; i++) {
+    wPolyCc[i] /= wtot;
+  }
+
+ // matmgr.Mixture("ABSO", 58, "POLYETHYLEN2$", apoly, zpoly, .95, 2, wpoly);
+
+  std::vector<G4Element* >CH2;
+  CH2.reserve(aPolyCc.size());
+
+  KmedCH2Sh = new G4Material("POLYETHYLEN2$", .95*g/cm3, apoly.size() );
+
+  for (std::size_t i = 0; i < apoly.size(); i++) {
+   G4String symb = symbol[int(zpoly[i]) - 1];
+   CH2[i] = new G4Element(("Poly" + std::to_string(i)),symb,zpoly[i], apoly[i]);
+   KmedCH2Sh->AddElement(CH2[i], wpoly[i]);
+   //G4cout << steel[i] << G4endl;
+
+}
+
+  //Magnesium
+  //matmgr.Material("ABSO", 7, "MAGNESIUM$", 24.31, 12., 1.74, 25.3, 46.0);
+
+
+  kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
+  //G4Material* kMedMg = nist->FindOrBuildMaterial("G4_Mg");
+
+ G4cout << "rodou" << G4endl;
+
+}
+
 G4VPhysicalVolume* B1DetectorConstruction::Construct()
 {
   // Get nist material manager
   G4NistManager* nist = G4NistManager::Instance();
 
-
-
   // Option to switch on/off checking of volumes overlaps
   //
   G4bool checkOverlaps = true;
-
-
 
   //
   // World
@@ -182,7 +333,7 @@ G4Box* solidMag =
                         "MagField_box");
 
 
-       new G4PVPlacement(0,                     //no rotation
+    new G4PVPlacement(0,                     //no rotation
                       G4ThreeVector(0,0, mag_position),       //at (0,0,0)
                       logicMag,            //its logical volume
                       "MagField",               //its name
@@ -190,152 +341,6 @@ G4Box* solidMag =
                       false,                 //no boolean operation
                       0,                     //copy number
                       checkOverlaps);        //overlaps checking
-
-
-
-
-
- //-------- ABSORBER --------------
- //materials
-
-  //Materiais from CERN model
-
-  std::vector<G4String> symbol = {"H", "He", "Li","Be", "B", "C", "N", "O", "F", "Ne", "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn", "Sb", "Te", "I", "Xe", "Cs", "Ba","La","Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu" ,"Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Ti", "Pb", "Bi"};
-
-
-
-
- //Carbon Material
-
- G4Material* kMedCSh = new G4Material("ABSO_C_C2", 6.,  12.01*g/mole,  1.75*g/cm3);
-//matmgr.Material("ABSO", 46, "CARBON2$", 12.01, 6., 1.75, 24.4, 49.9);
- G4cout << kMedCSh << G4endl;
-
-//LEAD - Pb
-
-G4Material* kMedPb = new G4Material("ABSO_PB_C0", 82., 207.19*g/mole,15.9994*g/cm3);
-G4cout << kMedPb<< G4endl;
-//matmgr.Material("ABSO", 53, "LEAD2$", 207.19, 82., 11.35, .56, 18.5);
- //Air
-
-  std::vector<G4double> aAir = {12.0107, 14.0067, 15.9994, 39.948};
-  std::vector<G4double> zAir = {6., 7., 8., 18.};
-  std::vector<G4double> wAir = {0.000124, 0.755267, 0.231781, 0.012827};
-
-
-// Polyethylene
-  //
-  std::vector<G4double> apoly = {12.01, 1.};
-  std::vector<G4double> zpoly = {6., 1.};
-  std::vector<G4double> wpoly = {.33, .67};
-
-// Concrete
-  //
-  std::vector<G4double> aconc = {1.*g/mole, 12.01*g/mole, 15.994*g/mole, 22.99*g/mole, 24.305*g/mole, 26.98*g/mole, 28.086*g/mole, 39.1*g/mole, 40.08*g/mole, 55.85*g/mole};
-  std::vector<G4double> zconc = {1., 6., 8., 11., 12., 13., 14., 19., 20., 26.};
-  std::vector<G4double> wconc = {.01, .001, .529107, .016, .002, .033872, .337021, .013, .044, .014};
-//matmgr.Mixture("ABSO", 57, "CONCRETE2$", aconc, zconc, 2.35, 10, wconc);
-
-
-
-
-
-
-std::vector<G4Element *>conc;
-conc.reserve(aconc.size());
-
-G4Material* kMedConcSh = new G4Material("CONCRETE CC2", 2.35*g/cm3, aconc.size());
-
-
-for (std::size_t i = 0; i < aconc.size(); i++) {
-   G4String symb = symbol[int(zconc[i]) - 1];
-   conc[i] = new G4Element(("conc" + std::to_string(i)),symb,zconc[i], aconc[i]);
-   kMedConcSh->AddElement(conc[i], wconc[i]);
-   //G4cout << steel[i] << G4endl;
-
-}
-
-G4cout << kMedConcSh << G4endl;
-
-// Steel
-  //
-  std::vector<G4double> asteel = {55.847*g/mole, 51.9961*g/mole, 58.6934*g/mole, 28.0855*g/mole};
-  std::vector<G4double> zsteel = {26., 24., 28., 14.};
-  std::vector<G4double> wsteel = {.715, .18, .1, .005};
-//
-  std::vector<G4Element *>steel;
-  steel.reserve(asteel.size());
-
-  G4Material* kMedSteel = new G4Material("STAINLESS STEEL0", 7.88*g/cm3, asteel.size());
-
-  for (std::size_t i = 0; i < asteel.size(); i++) {
-   G4String symb = symbol[int(zsteel[i]) - 1];
-   steel[i] = new G4Element(("Steel" + std::to_string(i)),symb,zsteel[i], asteel[i]);
-   kMedSteel->AddElement(steel[i], wsteel[i]);
-   //G4cout << steel[i] << G4endl;
-
-}
-
- G4cout << kMedSteel << G4endl;
-
- // Ni-Cu-W alloy
-  //
-  std::vector<G4double> aniwcu = {58.6934*g/mole, 183.84*g/mole, 63.546*g/mole};
-  std::vector<G4double> zniwcu = {28., 74., 29.};
-  std::vector<G4double> wniwcu = {0.015, 0.95, 0.035};
-
-  std::vector<G4Element *>Ni_Cu_W;
-  Ni_Cu_W.reserve(aniwcu.size());
-
-  G4Material* kMedNiW = new G4Material("ABSO_Ni/W0", 18.78*g/cm3, aniwcu.size());
-
-  for (std::size_t i = 0; i < aniwcu.size(); i++) {
-   G4String symb = symbol[int(zniwcu[i]) - 1];
-   G4cout << symb << G4endl;
-   Ni_Cu_W[i] = new G4Element(("ABSO_Ni/W0" + std::to_string(i)),symb,zniwcu[i], aniwcu[i]);
-   kMedNiW->AddElement(Ni_Cu_W[i], wniwcu[i]);
-   //G4cout << steel[i] << G4endl;
-
-}
-
-
-  //
-  // Poly Concrete
-  //                      H     Li     F       C      Al     Si      Ca      Pb     O
-  std::vector<G4double> aPolyCc = {1.*g/mole, 6.941*g/mole, 18.998*g/mole, 12.01*g/mole, 26.98*g/mole, 28.086*g/mole, 40.078*g/mole, 207.2*g/mole, 15.999*g/mole};
-  std::vector<G4double> zPolyCc = {1., 3., 9., 6., 13., 14., 20., 82., 8.};
-  std::vector<G4double> wPolyCc = {4.9, 1.2, 1.3, 1.1, 0.15, 0.02, 0.06, 0.7, 1.1};
-  G4double wtot = 0;
-
-   for (G4int i = 0; i < 9; i++) {
-    wtot += wPolyCc[i];
-  }
-   for (G4int i = 0; i < 9; i++) {
-    wPolyCc[i] /= wtot;
-  }
-
- // matmgr.Mixture("ABSO", 58, "POLYETHYLEN2$", apoly, zpoly, .95, 2, wpoly);
-
-  std::vector<G4Element* >CH2;
-  CH2.reserve(aPolyCc.size());
-
-  G4Material* KmedCH2Sh = new G4Material("POLYETHYLEN2$", .95*g/cm3, aPolyCc.size() );
-
-  for (std::size_t i = 0; i < aPolyCc.size(); i++) {
-   G4String symb = symbol[int(zPolyCc[i]) - 1];
-   CH2[i] = new G4Element(("Poly" + std::to_string(i)),symb,zPolyCc[i], aPolyCc[i]);
-   KmedCH2Sh->AddElement(CH2[i], wPolyCc[i]);
-   //G4cout << steel[i] << G4endl;
-
-}
-
-//Magnesium
-//matmgr.Material("ABSO", 7, "MAGNESIUM$", 24.31, 12., 1.74, 25.3, 46.0);
-
-
-G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
-//G4Material* kMedMg = nist->FindOrBuildMaterial("G4_Mg");
-
 
 
 //some importante initial values
@@ -465,16 +470,13 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
   G4double rOuSteelEnvelopeFI = (85.0*cm / 2.) + 0.06*cm;
 
 
-
-
   if (aRegion) delete aRegion;
-
+  
 
   // Front cover
 
-
   G4Cons* shFaSteelEnvelopeC1_cone = new G4Cons("shFaSteelEnvelopeC1_cone", rInSteelEnvelopeFC1, rOuSteelEnvelopeFC1,  rInSteelEnvelopeFC2, rOuSteelEnvelopeFC2, dzSteelEnvelopeFC, angle0, angle360);
-
+    G4cout << "teste" << G4endl;
 
  // Insert
 
@@ -484,7 +486,6 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 
 
   G4LogicalVolume* shFaSteelEnvelopeC1 = new G4LogicalVolume(shFaSteelEnvelopeC1_T, kMedSteel, "shFaSteelEnvelopeC1");
-
   Logical_volumes.push_back(shFaSteelEnvelopeC1);
 
   // 5 deg cone
@@ -525,11 +526,6 @@ G4Material* kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
 
 
  // G4Tubs* shFaSteelEnvelopeT_tub = new G4Tubs("shFaSteelEnvelopeT_tub", rInSteelEnvelopeFI, rOuSteelEnvelopeFI, dzSteelEnvelopeFI, 0.*deg,360.*deg);
-
-
-
-
-
 
 
  G4AssemblyVolume* voFaSteelEnvelope = new G4AssemblyVolume();
@@ -1017,9 +1013,6 @@ G4Cons* voFaWTube5_cone = new G4Cons("voFaWTube5_cone", rInFaWTube5C1, rOuFaWTub
 G4LogicalVolume* voFaWTube5 = new G4LogicalVolume(voFaWTube5_cone, kMedNiW, "voFaWTube5");
 volumes.push_back(voFaWTube5);
  names.push_back("voFaWTube5");
-
-
-
 
 
   //
@@ -1651,7 +1644,7 @@ G4double detec_length = 2.5*micrometer;
 
 G4Tubs* detec_tub2 = new G4Tubs("detec_tubs2", rInFaWTube5C2, rOuSteelEnvelopeR2, detec_length/2, 0.*deg,360.*deg);
 
-G4LogicalVolume* detec_volume2 = new G4LogicalVolume(detec_tub2, world_mat, "SD2");
+detec_volume2 = new G4LogicalVolume(detec_tub2, world_mat, "SD2");
 
 G4double detec_z2 = zFa + (dzFa + 2*dzEndPlate) + 1*micrometer - mag_position + detec_length;
 
@@ -1659,7 +1652,7 @@ G4double detec_z2 = zFa + (dzFa + 2*dzEndPlate) + 1*micrometer - mag_position + 
  new G4PVPlacement(0,
 		 G4ThreeVector(0,0,detec_z2),
 		 detec_volume2,
-		 "detector21",
+		 "SD2",
 		 logicMag,
 		 false,
 		 0,
@@ -1667,42 +1660,19 @@ G4double detec_z2 = zFa + (dzFa + 2*dzEndPlate) + 1*micrometer - mag_position + 
 		 );
 
 
-//detector 22
 
-/*
-G4Tubs* detec_tub22 = new G4Tubs("detec_tubs22", rInFaWTube5C2, rOuSteelEnvelopeR2, detec_length/2, 0.*deg,360.*deg);
-
-G4LogicalVolume* detec_volume22 = new G4LogicalVolume(detec_tub22, world_mat, "detec");
-
-G4double detec_z22 = detec_z2 + detec_length;
-
-
- new G4PVPlacement(0,
-		 G4ThreeVector(0,0,detec_z22),
-		 detec_volume22,
-		 "detector22",
-		 logicMag,
-		 false,
-		 0,
-		checkOverlaps
-		 );
-
-*/
-
-//detector 12
-
-
+//detector 1
 
 G4Tubs* detec_tub1 = new G4Tubs("detec_tubs1", rInFaMgRingO, rOuFaQPlateF, detec_length/2, 0.*deg,360.*deg);
-G4LogicalVolume* detec_volume12 = new G4LogicalVolume(detec_tub1, world_mat, "SD1");
+detec_volume1 = new G4LogicalVolume(detec_tub1, world_mat, "SD1");
 G4double detec_z1 = zFa - 1*micrometer - mag_position - detec_length;
 
 
 
 new G4PVPlacement(0,
 		 G4ThreeVector(0,0,detec_z1),
-		 detec_volume12,
-		 "detector11",
+		 detec_volume1,
+		 "SD1",
 		 logicMag,
 		 false,
 		 0,
@@ -1712,50 +1682,6 @@ new G4PVPlacement(0,
 
 
 num_detec=1;
-
-//detector 11
-
-/*
-
-G4Tubs* detec_tub12 = new G4Tubs("detec_tubs12", rInFaMgRingO, rOuFaQPlateF, detec_length/2, 0.*deg,360.*deg);
-G4LogicalVolume* detec_volume12 = new G4LogicalVolume(detec_tub12, world_mat, "detec11");
-G4double detec_z12 = detec_z1 - detec_length;
-
-
-
-new G4PVPlacement(0,
-		 G4ThreeVector(0,0,detec_z12),
-		 detec_volume12,
-		 "detector12",
-		 logicMag,
-		 false,
-		 0,
-		false
-		 );
-
-*/
-
-
-
-
-  //fScoringVolume1 = carbon_Lvolume;
-  //fScoringVolume2 = concrete_Lvolume;
-
-
-
-//sensitive detector1.
-
-auto sdman = G4SDManager::GetSDMpointer();
-
-G4String SDname12 = "SD11";
-auto sensitive12 = new B1SD(SDname12);
-sdman->AddNewDetector(sensitive12);
-detec_volume12->SetSensitiveDetector(sensitive12);
-
-G4String SDname21 = "SD21";
-auto sensitive21 = new B1SD(SDname21);
-sdman->AddNewDetector(sensitive21);
-detec_volume2->SetSensitiveDetector(sensitive21);
 
 
 G4cout << "!!!!!!!!!Funfando!!!!!!" << G4endl;
@@ -1821,10 +1747,25 @@ void B1DetectorConstruction::SetupConstructor() {
 }
 
 void B1DetectorConstruction::ConstructSDandField() {
-  //creating uniform magnetic field
+    //Set sensitive detectors
 
+   G4SDManager* sdman = G4SDManager::GetSDMpointer();
+
+   G4String SDname12 = "SD1";
+   auto sensitive12 = new B1SD(SDname12);
+   sdman->AddNewDetector(sensitive12);
+   SetSensitiveDetector(detec_volume1,sensitive12);
+  
+
+   G4String SDname21 = "SD2";
+   auto sensitive21 = new B1SD(SDname21);
+   sdman->AddNewDetector(sensitive21);
+   SetSensitiveDetector(detec_volume2,sensitive12);
+  
+    
+    //creating uniform magnetic field
     G4MagneticField* magField = new G4UniformMagField(G4ThreeVector(0.,0.,-.5*tesla));
-    G4FieldManager* FieldMgr  =new G4FieldManager(magField);
+    G4FieldManager* FieldMgr = new G4FieldManager(magField);
     if (build_magnetic) {
         logicMag->SetFieldManager(FieldMgr, true);
         G4cout << "Applying magnetic field" << G4endl;

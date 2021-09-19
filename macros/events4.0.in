@@ -1,61 +1,69 @@
 /run/initialize
 #4.0,45
 /gun/particle mu+
+/gun/momentum 0.07416858436801903 0.07416858436801901 1.5
+/run/beamOn 1000000
+#4.0,45
+/gun/particle mu+
+/gun/momentum 0.09889144582402536 0.09889144582402534 2.0
+/run/beamOn 1000000
+#4.0,45
+/gun/particle mu+
 /gun/momentum 0.1236143072800317 0.12361430728003168 2.5
-/run/beamOn 15000
+/run/beamOn 1000000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.14833716873603806 0.14833716873603803 3.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.17306003019204438 0.17306003019204436 3.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.1977828916480507 0.19778289164805068 4.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.22250575310405704 0.222505753104057 4.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.2472286145600634 0.24722861456006337 5.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.2719514760160698 0.2719514760160697 5.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.2966743374720761 0.29667433747207606 6.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.3213971989280824 0.32139719892808233 6.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.34612006038408877 0.3461200603840887 7.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.37084292184009515 0.3708429218400951 7.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.3955657832961014 0.39556578329610137 8.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.42028864475210775 0.4202886447521077 8.5
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.4450115062081141 0.445011506208114 9.0
-/run/beamOn 15000
+/run/beamOn 100000
 #4.0,45
 /gun/particle mu+
 /gun/momentum 0.46973436766412047 0.4697343676641204 9.5
-/run/beamOn 15000
+/run/beamOn 100000

@@ -1,13 +1,21 @@
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: SensitiveDetector
+//--------------------------------------------------
+
+
 #ifndef B1SD_h
 #define B1SD_h 1
 
 #include "G4VSensitiveDetector.hh"
 #include "B1Hits.hh"
 #include <vector>
-
-
-/// \file B1SD.hh
-/// \brief Definition of the B1SD class.
 
 class G4Step;
 class G4HCofThisEvent;

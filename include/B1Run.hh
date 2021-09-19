@@ -1,3 +1,15 @@
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: Run
+//--------------------------------------------------
+
+
 #ifndef Run_h
 #define Run_h 1
 
@@ -36,7 +48,8 @@ public:
 
   G4THitsMap<G4double> fMapSum[43][9];
   G4int fColIDSum[43][9];
-
+  G4int HID1;
+  G4int HID2;
 };
 
 #endif

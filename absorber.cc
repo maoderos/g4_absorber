@@ -38,6 +38,7 @@ int main(int argc,char** argv)
   //
   #ifdef G4MULTITHREADED
   G4MTRunManager* runManager = new G4MTRunManager;
+  G4cout << "is multithread" << G4endl;
   #else
   G4RunManager* runManager = new G4RunManager;
   #endif
@@ -47,7 +48,7 @@ int main(int argc,char** argv)
 
    //3. Create/obtain an Physics List and register it in the Run-Manager
   G4PhysListFactory physListFactory;
-  const G4String plName = "FTFP_BERT";
+  const G4String plName = "FTFP_BERT_EMV";
   G4VModularPhysicsList* pl = physListFactory.GetReferencePhysList( plName );
   runManager->SetUserInitialization( pl );
 

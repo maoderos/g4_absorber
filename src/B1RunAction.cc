@@ -1,6 +1,15 @@
 
-/// \file B1RunAction.cc
-/// \brief Implementation of the B1RunAction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: RunAction
+//--------------------------------------------------
+
 
 #include "B1RunAction.hh"
 #include "B1PrimaryGeneratorAction.hh"
@@ -10,7 +19,7 @@
 #include <math.h>
 #include "G4RegionStore.hh"
 #include "G4Region.hh"
-#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include "G4Run.hh"
 #include "G4AccumulableManager.hh"
 #include "G4LogicalVolumeStore.hh"
@@ -58,23 +67,10 @@ void B1RunAction::BeginOfRunAction(const G4Run*)
 {
  G4cout << "BEGIN RUN" << G4endl;
 
-  n_of_mu_plus = 0.;
-  n_of_mu_minus = 0.;
-
-  const B1DetectorConstruction* detectorConstruction
-   = static_cast<const B1DetectorConstruction*>
-     (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
-
-
-   for (G4int i=0; i<detectorConstruction->getNumDetec();i++) {
-
-       num_event_detec.push_back(0);
-}
 
 const B1PrimaryGeneratorAction* generatorAction
  = static_cast<const B1PrimaryGeneratorAction*>
-   (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+   (G4MTRunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
 G4String runCondition;
 
 G4double angle_a;
@@ -93,17 +89,26 @@ if (generatorAction)
  #define PI 3.14159265
   G4double angle_a = acos((z/sqrt(x*x+y*y+z*z)))*180/PI;
   G4double angle = acos((z/sqrt(x*x+y*y+z*z)));
-  G4double P = particleGun->GetParticleMomentum()/GeV;
-  G4double Pz = P*cos(angle);
+  
 
+ // Pass values to variable to be acessed in Stepping action
 
- std::stringstream energy_k;
- std::stringstream angle_b;
- angle_b << std::setprecision(4) << angle_a;
- energy_k << std::setprecision(4) << Pz;
+ alpha = angle_a;
+ Pz = particleEnergy;
+ 
+ G4String particleName = particleGun->GetParticleDefinition()->GetParticleName();
+ // Create a file and store its name 
+ std::stringstream file;
+ file << "data_" << particleName << "_" << std::setprecision(4) <<  Pz/GeV << "_GeV_" << std::setprecision(4) << alpha << "_deg.dat";
+ 
+ filename = file.str();
+ 
+ 
+ 
 
- alpha = angle_b.str();
- gunEnergy = energy_k.str();
+ //Creating header for file
+
+ 
 
 }
 
@@ -117,6 +122,7 @@ if (generatorAction)
 
 void B1RunAction::EndOfRunAction(const G4Run* run)
 {
+  G4cout << "End Of Run" << G4endl;
 
   timer->Stop();
 
@@ -127,20 +133,18 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
   G4AccumulableManager* accumulableManager = G4AccumulableManager::Instance();
   accumulableManager->Merge();
 
-  // Compute dose = total energy deposit in a run and its variance
+  
 
   const B1DetectorConstruction* detectorConstruction
    = static_cast<const B1DetectorConstruction*>
-     (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
-
+     (G4MTRunManager::GetRunManager()->GetUserDetectorConstruction());
 
   // Run conditions
   //  note: There is no primary generator action object for "master"
   //        run manager for multi-threaded mode.
   const B1PrimaryGeneratorAction* generatorAction
    = static_cast<const B1PrimaryGeneratorAction*>
-     (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+     (G4MTRunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
   G4String runCondition;
 
   G4double angle_a;
@@ -195,6 +199,8 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
       detName[i] = CIname;
   }
 
+ auto print = false;
+if (print) { 
   G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
     for(size_t i=0;i<N;i++)
     {
@@ -230,11 +236,10 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
       << G4endl;
       G4cout << "----------------------------------------------------------------------------------------" << G4endl;
 
-      //info <<  region->GetName() << " " << theRun->GetNumberOfEvent() << " " << G4BestUnit((theRun->GetPopulation(i)),"Energy") << " " << (theRun->GetPassageCell(i)) << " " << G4endl;
-
+     
 }
 
-
+}
 
 }
 
@@ -243,7 +248,6 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
 void B1RunAction::add_number_of_event(G4int detec_id)
 {
   num_event_detec[detec_id] += 1;
- // G4cout << num_event_detec[detec_id]  << G4endl;
 
 }
 

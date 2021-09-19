@@ -1,6 +1,15 @@
 
-/// \file B1RunAction.hh
-/// \brief Definition of the B1RunAction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: RunAction
+//--------------------------------------------------
+
 
 #ifndef B1RunAction_h
 #define B1RunAction_h 1
@@ -36,9 +45,10 @@ class B1RunAction : public G4UserRunAction
         return num_event_detec[detec_id];
        // G4cout << num << G4endl;
        }
+    const G4String getFilename() const {return filename;}
 
-    G4String get_alpha(){return alpha;};
-    G4String get_energy(){return gunEnergy;};
+    G4double get_alpha(){return alpha;};
+    G4double get_pz(){return Pz;};
     G4Timer* timer;
   private:
 
@@ -46,8 +56,9 @@ class B1RunAction : public G4UserRunAction
     G4double n_of_mu_plus;
     G4double  n_of_mu_minus;
     std::vector<G4int >num_event_detec;
-    G4String alpha;
-    G4String gunEnergy;
+    G4double alpha;
+    G4double Pz;
+    G4String filename;
 };
 
 #endif

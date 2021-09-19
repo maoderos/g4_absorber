@@ -1,6 +1,15 @@
 
-/// \file B1DetectorConstruction.hh
-/// \brief Definition of the B1DetectorConstruction class
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: DetectorConstruction
+//--------------------------------------------------
+
 
 #ifndef B1DetectorConstruction_h
 #define B1DetectorConstruction_h 1
@@ -9,7 +18,8 @@
 #include "globals.hh"
 #include "G4SDManager.hh"
 #include "G4VisAttributes.hh"
-#include 	<vector>
+#include <vector>
+#include "G4Material.hh"
 
 class G4VPhysicalVolume;
 class G4LogicalVolume;
@@ -26,7 +36,7 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
   public:
     B1DetectorConstruction();
     virtual ~B1DetectorConstruction();
- 
+   
     virtual void ConstructSDandField();
     /// Add magnetic field to a specific logical volume.
 
@@ -50,12 +60,17 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
 
    std::vector<G4String> GetNames() const {return names;}
    std::vector<G4String> GetPhyNames() const {return physic_names;}
-
-  protected:
+   G4String GetSD1name() const {return SD1_name;}
+   G4String GetSD2name() const {return SD2_name;}
+	    
+  private:
+    void DefineMaterials();
     G4LogicalVolume*  fScoringVolume1;
     G4bool build_abs;
     G4int num_detec;
     G4LogicalVolume* fScoringVolume2;
+    G4LogicalVolume* detec_volume2;
+    G4LogicalVolume* detec_volume1;
     std::vector<G4LogicalVolume *> Logical_volumes;
     std::vector<G4LogicalVolume *> volumes;
     std::vector<G4String> names;
@@ -64,7 +79,15 @@ class B1DetectorConstruction : public G4VUserDetectorConstruction
     G4LogicalVolume* logicWorld;
     G4bool build_magnetic;
     G4Region* aRegion;
-
+    G4Material* kMedCSh;
+    G4Material* kMedPb;
+    G4Material* kMedConcSh; 
+    G4Material* kMedSteel;
+    G4Material* kMedNiW;
+    G4Material* KmedCH2Sh;
+    G4Material* kMedMg;
+    G4String SD1_name;
+    G4String SD2_name;
 };
     
 

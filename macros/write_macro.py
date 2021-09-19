@@ -1,9 +1,10 @@
 import math
 
-pz0= 25
+pz0= 15
 pz1= 100
 phi = 45
-n = 15000
+n1 = 100000
+n2 = 1000000
 particle = ["mu+"]
 
 
@@ -26,6 +27,10 @@ def write_file(ang1):
        	linha02 = "#{0},{1}".format(ang0, ang1)
        	data.write(linha02+"\n")
        	#Após calculado, escrever para mu+ e mu-
+        if (pz > 0 and pz <= 25):
+            n = n2
+        else:
+            n = n1
        	for part in particle:
            linha_mu = "/gun/particle {0}".format(part)
            linha1 = "/gun/momentum {0} {1} {2}".format((px),(py),(pz/10))

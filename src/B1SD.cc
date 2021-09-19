@@ -4,16 +4,25 @@
 #include "G4TouchableHistory.hh"
 #include "G4Track.hh"
 #include "B1PrimaryGeneratorAction.hh"
+#include "B1RunAction.hh"
 #include "G4Step.hh"
 #include "G4SDManager.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ios.hh"
-#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
 #include <iostream>
 #include <fstream>
 
-/// \file B1SD.cc
-/// \brief Implementation of the B1SD class.
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: SensitiveDetector
+//--------------------------------------------------
 
 
 B1SD::B1SD(G4String SDname): G4VSensitiveDetector(SDname),
@@ -32,44 +41,45 @@ B1SD::~B1SD() {
 G4bool B1SD::ProcessHits(G4Step* step, G4TouchableHistory* ROhist) {
 
   G4TouchableHandle touchable = step->GetPreStepPoint()->GetTouchableHandle();
-  //pega o nome da partícula
+  //get particle name
   const G4String particle_name = step->GetTrack()->GetDynamicParticle()->GetParticleDefinition()->GetParticleName();
-  //pega o Track relacionado à ela
-  G4int track = step->GetTrack()->GetTrackID();
-//pega energia da particula
- const G4double energy = step->GetPreStepPoint()->GetTotalEnergy();
+  //get particle track
+  const G4int track = step->GetTrack()->GetTrackID();
+  //get particle energy 
+  const G4double energy = step->GetPreStepPoint()->GetTotalEnergy();
 
   const G4ThreeVector position = step->GetPreStepPoint()->GetPosition();
-  //pega momentum da particula
-  const G4ThreeVector momentum = step->GetPreStepPoint()->GetMomentum();
+  const G4double x = position.getX();
+  const G4double y = position.getY(); 
+  
+  //get particle momentum
+  const G4ThreeVector momentum = step->GetPreStepPoint()->GetMomentumDirection();
+  const G4double px = momentum.getX();
+  const G4double py = momentum.getY();
+  const G4double pz = momentum.getZ();
 
   const G4StepPoint* thePreVL = step->GetPreStepPoint();
   const G4String detec_name = step->GetTrack()->GetVolume()->GetLogicalVolume()->GetName();
+    
 
-// get initial data
-  const B1PrimaryGeneratorAction* generatorAction
-     = static_cast<const B1PrimaryGeneratorAction*>
-       (G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
+  const B1RunAction* runAction = static_cast<const B1RunAction*>
+       (G4MTRunManager::GetRunManager()->GetUserRunAction());
 
-  const G4ParticleGun* particleGun = generatorAction->GetParticleGun();
-  G4double x = particleGun->GetParticleMomentumDirection().x();
-  G4double y = particleGun->GetParticleMomentumDirection().y();
-  G4double z = particleGun->GetParticleMomentumDirection().z();
 
-  const G4double alpha = acos((z/sqrt(x*x+y*y+z*z)));
-  const G4double alpha_degree  = alpha*(180/(3.14159265));
-  const G4double P = particleGun->GetParticleMomentum();
-  const G4double Pz = P*cos(alpha);
-//	G4cout << "ppp" << G4endl;
-//Checa se a partícula é repetida
+// check if particle is entering in volume and if its primary
+
 if (thePreVL->GetStepStatus() == fGeomBoundary && track == 1) {
-       // X,Y,Z,Px,Py,PZ,Pz0,alpha
-       std::ofstream data("data_" + detec_name + ".dat",std::ios_base::app);
-       data << position.x()/(m) << "  " << position.y()/(m) << "  " << position.z()/(m) << " "
-                                << energy/GeV << " " << momentum.x()/GeV << " " << momentum.y()/(GeV)<< " "
-                                <<  momentum.z()/(GeV) << " " << Pz/(GeV) << " " << alpha_degree <<"\n";
-       data.close();
+   G4String filename = runAction->getFilename();
+   std::ofstream data(("results_" + detec_name + "/" + filename),std::ios_base::app);
+  // std::ofstream test("testSD" + detec_name + ".txt",std::ios_base::app);  Unity test
+  //Write data in file
+  // X, Y, px, py, pz
+   data << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n";
+  //test << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n"; Unity test
+       
 }
+
+return true;
 
 }
 

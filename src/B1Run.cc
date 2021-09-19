@@ -1,3 +1,15 @@
+//-------------------------------------------------------------------------------------------------------
+//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//History of the code
+//----------------------------
+//Year; Author; Paper	
+// 2021; M.A.O Derós, L.G Pareira ,G. Hoff; marcosderos78@gmail.com, lgp@ufrgs.br, ghoff.gesic@gmail.com
+//----------------------------
+//-------------------------------------------------------------------------------------------------------
+//$ID: Run
+//--------------------------------------------------
+
+
 #include "B1Run.hh"
 #include "G4Event.hh"
 #include "G4HCofThisEvent.hh"
@@ -11,7 +23,7 @@ using namespace std;
 B1Run::B1Run()
  : G4Run()
 {
-  G4cout << "111" << G4endl;
+
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
@@ -32,8 +44,8 @@ B1Run::B1Run()
         "passageCellFlux","cylinder","termination"};
 
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
+  
   G4String fullName;
-
   size_t i,j;
   for(i=0;i<N;i++)
   {
@@ -62,17 +74,23 @@ G4double B1Run::GetTotal(const G4THitsMap<G4double> &map) const
 
 void B1Run::RecordEvent(const G4Event* evt)
 {
-  //AAAA
+
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
 
   G4int N = detectorConstruction->getNV();
-  //AAAA
+
 
   G4HCofThisEvent* HCE = evt->GetHCofThisEvent();
   if(!HCE) return;
+
+  //Get Hits collections
+  //HitsCollection* hitsColl1 = static_cast<HitsCollection*>(HCE->GetHC(HID1));
+ // HitsCollection* hitsColl2 = static_cast<HitsCollection*>(HCE->GetHC(HID2));
+
+
   numberOfEvent++;
   size_t i,j;
   for(i=0;i<N;i++)
@@ -84,6 +102,8 @@ void B1Run::RecordEvent(const G4Event* evt)
       fMapSum[i][j] += *evtMap;
     }
   }
+
+  
 
 }
 
