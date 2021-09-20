@@ -30,13 +30,13 @@ public:
   const G4String getParticleInTarget() {
     return fParticleInTarget;
   }
-  const G4double getParticleEnergy() {
+   G4double getParticleEnergy()  {
     return fparticle_energy;
   }
-  const G4ThreeVector getParticlePos() {
+   G4ThreeVector getParticlePos() {
     return fparticle_position;
   }
-  const G4ThreeVector getParticleMomentum() {
+   G4ThreeVector getParticleMomentum()  {
     return fparticle_momentum;
   }
   

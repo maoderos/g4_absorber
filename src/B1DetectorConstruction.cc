@@ -124,8 +124,7 @@
 
 B1DetectorConstruction::B1DetectorConstruction()
 : G4VUserDetectorConstruction(),
-  fScoringVolume1(0),
-  fScoringVolume2(0), aRegion(0), detec_volume2(0), detec_volume1(0)
+   detec_volume2(0),detec_volume1(0),aRegion(0)
 { 
  DefineMaterials();
 }
@@ -279,7 +278,7 @@ G4cout << kMedConcSh << G4endl;
   kMedMg = new G4Material("Magnesium", 12.,24.31*g/mole,1.74*g/cm3);
   //G4Material* kMedMg = nist->FindOrBuildMaterial("G4_Mg");
 
- G4cout << "rodou" << G4endl;
+ G4cout << "Materials created" << G4endl;
 
 }
 
@@ -352,7 +351,7 @@ G4Box* solidMag =
   // Mimimum angle of the tracking region
   G4double angle02 = tan(2.*kDegRad);
   // Opening angle of W rear plug
-  G4double angle03 = tan(3.*kDegRad);
+  //G4double angle03 = tan(3.*kDegRad);
   //
   G4double angle05 = tan(5.*kDegRad);
   // Maximum angle of the tracking region
@@ -360,13 +359,13 @@ G4Box* solidMag =
   // Opening angle of the FA snout
   G4double angle24 = tan(24.*kDegRad);
   // Opneing angle of the inner cone
-  G4double angle71 = tan(0.697*kDegRad);
+  //G4double angle71 = tan(0.697*kDegRad);
 
   // Starting position in z   const Float_t zFa = 90.0;
   G4double zFa = 90.0*cm;
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  G4double pos_after_detec = 3.*m;
+  //G4double pos_after_detec = 3.*m;
   G4double angle0 = 0.*deg;
   G4double angle360 = 360.*deg;
   G4Transform3D Tr;
@@ -897,7 +896,6 @@ shFaWTube1_2->SetVisAttributes(aa);
   G4double dzFaWTube2F = 0.6*cm/2;
   G4double rInFaWTube2F = 15.4*cm / 2.;
   // Total length
-  G4double dzFaWTube2 = dzFaWTube2C + dzFaWTube2F;
 
 
 // Front Flange
@@ -1621,7 +1619,7 @@ physic_names.push_back("voFaWTube5");
 
 
 if (aRegion) delete aRegion;
-for (G4int i=0; i<(physic_names.size()); i++){
+for (size_t i=0; i<(physic_names.size()); i++){
     aRegion = new G4Region(physic_names[i]);
      //G4ProductionCuts* cuts = new G4ProductionCuts
      //cuts->SetProductionCut(0.1*cm);
@@ -1637,10 +1635,8 @@ for (G4int i=0; i<(physic_names.size()); i++){
 
 
 //detector 2
-pos_after_detec = 0.01*m;
+
 G4double detec_length = 2.5*micrometer;
-//G4double initial_radius = 5*cm;
-//G4double final_radius = (5.979*m)*tan(9*PI/180.00);
 
 G4Tubs* detec_tub2 = new G4Tubs("detec_tubs2", rInFaWTube5C2, rOuSteelEnvelopeR2, detec_length/2, 0.*deg,360.*deg);
 
@@ -1695,9 +1691,10 @@ void B1DetectorConstruction::SetupConstructor() {
     G4SDManager::GetSDMpointer()->SetVerboseLevel(1);
     G4String filterName, particleName;
     //change
-    G4SDParticleFilter* gammaFilter = new G4SDParticleFilter(filterName="gammaFilter",particleName="gamma");
+    // If a filter is needed
+    //G4SDParticleFilter* gammaFilter = new G4SDParticleFilter(filterName="gammaFilter",particleName="gamma");
  // declaring the camaras as MultiFunctionalDetector scorers
-  for(G4int i=0;i<volumes.size();i++) {
+  for(size_t i=0;i<volumes.size();i++) {
     G4String detName = names[i];
     G4MultiFunctionalDetector* det = new G4MultiFunctionalDetector(detName);
     G4SDManager::GetSDMpointer()->AddNewDetector(det);

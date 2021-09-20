@@ -43,10 +43,8 @@ using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1RunAction::B1RunAction()
-: G4UserRunAction(),
-  n_of_mu_plus(0.),
-  n_of_mu_minus(0.),
-  nEvent(0)
+: G4UserRunAction()
+
 {
 
 
@@ -73,7 +71,7 @@ const B1PrimaryGeneratorAction* generatorAction
    (G4MTRunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
 G4String runCondition;
 
-G4double angle_a;
+
 if (generatorAction)
 {
   const G4ParticleGun* particleGun = generatorAction->GetParticleGun();
@@ -83,23 +81,24 @@ if (generatorAction)
   G4double x = particleGun->GetParticleMomentumDirection().x();
   G4double y = particleGun->GetParticleMomentumDirection().y();
   G4double z = particleGun->GetParticleMomentumDirection().z();
+  G4double p = particleGun->GetParticleMomentum();
 
   runCondition += G4BestUnit(particleEnergy,"Energy");
 
  #define PI 3.14159265
-  G4double angle_a = acos((z/sqrt(x*x+y*y+z*z)))*180/PI;
-  G4double angle = acos((z/sqrt(x*x+y*y+z*z)));
-  
+  G4double angle_a = acos((z/sqrt(x*x+y*y+z*z)));
+ 
 
  // Pass values to variable to be acessed in Stepping action
 
- alpha = angle_a;
- Pz = particleEnergy;
+ alpha = angle_a*180/PI;
+ Pz = p*cos(angle_a);
+ 
  
  G4String particleName = particleGun->GetParticleDefinition()->GetParticleName();
  // Create a file and store its name 
  std::stringstream file;
- file << "data_" << particleName << "_" << std::setprecision(4) <<  Pz/GeV << "_GeV_" << std::setprecision(4) << alpha << "_deg.dat";
+ file << "data_" << particleName << "_" << std::setprecision(2) <<  Pz/GeV << "_GeV_" << std::setprecision(2) << alpha << "_deg.dat";
  
  filename = file.str();
  
@@ -147,7 +146,6 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
      (G4MTRunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
   G4String runCondition;
 
-  G4double angle_a;
   if (generatorAction)
   {
     const G4ParticleGun* particleGun = generatorAction->GetParticleGun();
@@ -160,8 +158,6 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
   }
 
 
-
-  num_event_detec.clear();
 
   // Print
   //
@@ -182,7 +178,7 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
      << G4endl
      << "Time of Run: " << timer->GetRealElapsed()
      << G4endl
-     << "Angle: " << angle_a << " graus"
+     << "Angle: " << alpha << " graus"
      << G4endl;
 
 
@@ -190,11 +186,12 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
 const B1Run* theRun = (const B1Run*) run;
 
 
-G4int N = detectorConstruction->getNV();
+int N = detectorConstruction->getNV();
 std::vector<G4String> names = detectorConstruction->GetNames();
 std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
- G4String detName[N];
-  for(G4int i=0;i<N;i++) {
+std::vector<G4String> detName;
+detName.reserve(N);
+  for(int i=0;i<N;i++) {
       G4String CIname = names[i];
       detName[i] = CIname;
   }
@@ -202,13 +199,13 @@ std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
  auto print = false;
 if (print) { 
   G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
-    for(size_t i=0;i<N;i++)
+    for(int i=0;i<N;i++)
     {
 
 
       G4Region* region = G4RegionStore::GetInstance()->GetRegion(Regions_p[i]);
 
-      G4ProductionCuts* cuts = region->GetProductionCuts();
+      //G4ProductionCuts* cuts = region->GetProductionCuts();
 
       G4cout << "Region : " << region->GetName() << G4endl;
 
@@ -245,11 +242,6 @@ if (print) {
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void B1RunAction::add_number_of_event(G4int detec_id)
-{
-  num_event_detec[detec_id] += 1;
-
-}
 
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

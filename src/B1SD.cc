@@ -53,7 +53,7 @@ G4bool B1SD::ProcessHits(G4Step* step, G4TouchableHistory* ROhist) {
   const G4double y = position.getY(); 
   
   //get particle momentum
-  const G4ThreeVector momentum = step->GetPreStepPoint()->GetMomentumDirection();
+  const G4ThreeVector momentum = step->GetPreStepPoint()->GetMomentum();
   const G4double px = momentum.getX();
   const G4double py = momentum.getY();
   const G4double pz = momentum.getZ();
@@ -70,11 +70,11 @@ G4bool B1SD::ProcessHits(G4Step* step, G4TouchableHistory* ROhist) {
 
 if (thePreVL->GetStepStatus() == fGeomBoundary && track == 1) {
    G4String filename = runAction->getFilename();
-   std::ofstream data(("results_" + detec_name + "/" + filename),std::ios_base::app);
+   std::ofstream data(("results/" + detec_name + "/" + filename),std::ios_base::app);
   // std::ofstream test("testSD" + detec_name + ".txt",std::ios_base::app);  Unity test
   //Write data in file
   // X, Y, px, py, pz
-   data << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n";
+   data << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << " " <<  energy/GeV << "\n";
   //test << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n"; Unity test
        
 }

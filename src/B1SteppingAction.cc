@@ -46,9 +46,6 @@ void B1SteppingAction::UserSteppingAction(const G4Step* aStep)
   G4double alpha = runAction->get_alpha();
   G4double pz_o = runAction->get_pz();
 
-  G4String particle_name = aStep->GetTrack()->GetParticleDefinition()->GetParticleName();
-  const G4String particle_process = aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
-  G4String ParticleName = aStep->GetTrack()->GetParticleDefinition() -> GetParticleName();
   auto trackID = aStep->GetTrack()->GetTrackID();
 
 
@@ -89,7 +86,6 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
      G4int EventID = G4RunManager::GetRunManager() -> GetCurrentEvent() -> GetEventID();
      G4int ParentID = aStep -> GetTrack() -> GetParentID();
      G4int StepNumber =  aStep -> GetTrack() -> GetCurrentStepNumber();
-     G4int TrackID = aStep -> GetTrack() -> GetTrackID();
 
 
  G4double Position2X = point2 -> GetPosition().getX()/cm;
@@ -103,11 +99,11 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
  if(aStep->GetPostStepPoint()->GetStepStatus() != fGeomBoundary){
    //In function of Alpha and Energy 
    std::ostringstream filename;
-   filename << "data_volumes/data_physics_" << std::setprecision(4) << pz_o/GeV << "_" << std::setprecision(4) << alpha
+   filename << "data_volumes/data_physics_" << std::setprecision(2) << pz_o/GeV << "_" << std::setprecision(2) << alpha
                                                                                                    << ".txt";
                                                                                                                                                  
    std::ofstream data(filename.str(),std::ios_base::app);
-   data << EventID << " " << ParentID << " " << TrackID << " " << StepNumber << " "  << ProcessName1  << " " << ParticleName
+   data << EventID << " " << ParentID << " " << trackID << " " << StepNumber << " "  << ProcessName1  << " " << ParticleName
            << " " << Position1X << " " << Position1Y << " " << Position1Z << " "
            << Position2X << " " << Position2Y << " " << Position2Z
            << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " "
@@ -116,7 +112,7 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
 }
 }
 
-/*
+/* Code for Unity test 
 
 if (log_volume == "SD1" || log_volume == "SD2") {
  if (trackID == 1) {

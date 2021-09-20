@@ -29,11 +29,12 @@ B1Run::B1Run()
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
 
-  G4int N = detectorConstruction->getNV();
+  auto N = detectorConstruction->getNV();
   std::vector<G4String> names = detectorConstruction->GetNames();
 
-  G4String detName[N];
-  for(G4int i=0;i<N;i++) {
+  std::vector<G4String> detName;
+  detName.reserve(N);
+  for(int i=0;i<N;i++) {
   G4String CIname = names[i];
   detName[i] = CIname;
 
@@ -46,7 +47,7 @@ B1Run::B1Run()
   G4SDManager* SDMan = G4SDManager::GetSDMpointer();
   
   G4String fullName;
-  size_t i,j;
+  int i,j;
   for(i=0;i<N;i++)
   {
     for(j=0;j<9;j++)
@@ -92,7 +93,7 @@ void B1Run::RecordEvent(const G4Event* evt)
 
 
   numberOfEvent++;
-  size_t i,j;
+  int i,j;
   for(i=0;i<N;i++)
   {
     for(j=0;j<9;j++)
@@ -117,7 +118,7 @@ void B1Run::Merge(const G4Run * aRun) {
   G4int N = detectorConstruction->getNV();
   //AAAA
   const B1Run * localRun = static_cast<const B1Run *>(aRun);
-  size_t i,j;
+  int i,j;
   for(i = 0; i <N; i++) {
     for(j = 0; j <9; j++) {
       fMapSum[i][j] += localRun->fMapSum[i][j];

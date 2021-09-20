@@ -46,14 +46,6 @@ set(EXAMPLEB1_SCRIPTS
   init_vis.mac
   vis.mac
   events.in
-  event_mu_plus.in
-  /plus1/readme.txt
-  /plus2/readme.txt
-  /minus1/readme.txt
-  /minus2/readme.txt
-  /data_volumes/contagem.sh
-  /data_volumes/estruturaEntradaSaida_u.sh
-  analisys.py
   )
 
 foreach(_script ${EXAMPLEB1_SCRIPTS})
