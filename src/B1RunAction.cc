@@ -40,6 +40,8 @@
 
 using namespace std;
 
+#define PI 3.14159265
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1RunAction::B1RunAction()
@@ -85,7 +87,7 @@ if (generatorAction)
 
   runCondition += G4BestUnit(particleEnergy,"Energy");
 
- #define PI 3.14159265
+
   G4double angle_a = acos((z/sqrt(x*x+y*y+z*z)));
  
 

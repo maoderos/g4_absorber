@@ -51,7 +51,7 @@ void B1SteppingAction::UserSteppingAction(const G4Step* aStep)
 
   G4String log_volume = aStep->GetTrack()->GetVolume()->GetName();
   
-  
+   
 //PRONTO
 if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_impr_1_shFaSteelEnvelopeC2_pv_1"
 || log_volume == "av_1_impr_1_shFaSteelEnvelopeC3_pv_2"
@@ -87,7 +87,6 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
      G4int ParentID = aStep -> GetTrack() -> GetParentID();
      G4int StepNumber =  aStep -> GetTrack() -> GetCurrentStepNumber();
 
-
  G4double Position2X = point2 -> GetPosition().getX()/cm;
  G4double Position2Y = point2 -> GetPosition().getY()/cm;
  G4double Position2Z = point2 -> GetPosition().getZ()/cm;
@@ -99,8 +98,7 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
  if(aStep->GetPostStepPoint()->GetStepStatus() != fGeomBoundary){
    //In function of Alpha and Energy 
    std::ostringstream filename;
-   filename << "data_volumes/data_physics_" << std::setprecision(2) << pz_o/GeV << "_" << std::setprecision(2) << alpha
-                                                                                                   << ".txt";
+   filename << "data_volumes/data_physics_" << std::setprecision(2) << pz_o/GeV << "_" << std::setprecision(2) << alpha << ".txt";
                                                                                                                                                  
    std::ofstream data(filename.str(),std::ios_base::app);
    data << EventID << " " << ParentID << " " << trackID << " " << StepNumber << " "  << ProcessName1  << " " << ParticleName
@@ -108,7 +106,10 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
            << Position2X << " " << Position2Y << " " << Position2Z
            << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " "
            << alpha << " " << pz_o/GeV << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
+   processCount[ProcessName1] += 1;
+
   }
+
 }
 }
 
