@@ -16,7 +16,8 @@
 #include "G4SDManager.hh"
 #include "B1DetectorConstruction.hh"
 #include <vector>
-#include "G4RunManager.hh"
+#include "G4MTRunManager.hh"
+#include "B1SteppingAction.hh"
 
 using namespace std;
 
@@ -26,7 +27,7 @@ B1Run::B1Run()
 
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
-        (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        (G4MTRunManager::GetRunManager()->GetUserDetectorConstruction());
 
 
   auto N = detectorConstruction->getNV();
@@ -78,8 +79,11 @@ void B1Run::RecordEvent(const G4Event* evt)
 
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
-        (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        (G4MTRunManager::GetRunManager()->GetUserDetectorConstruction());
 
+  const B1SteppingAction* steppingAction 
+      = static_cast<const B1SteppingAction*>
+        (G4MTRunManager::GetRunManager()->GetUserSteppingAction());
 
   G4int N = detectorConstruction->getNV();
 
@@ -88,10 +92,7 @@ void B1Run::RecordEvent(const G4Event* evt)
   if(!HCE) return;
 
   //Get Hits collections
-  //HitsCollection* hitsColl1 = static_cast<HitsCollection*>(HCE->GetHC(HID1));
- // HitsCollection* hitsColl2 = static_cast<HitsCollection*>(HCE->GetHC(HID2));
-
-
+ 
   numberOfEvent++;
   int i,j;
   for(i=0;i<N;i++)
@@ -104,16 +105,16 @@ void B1Run::RecordEvent(const G4Event* evt)
     }
   }
 
-  
+processMap = steppingAction->getProcessCount();
 
 }
 
 void B1Run::Merge(const G4Run * aRun) {
-  //AAAA
+ 
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
         (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-
+    
 
   G4int N = detectorConstruction->getNV();
   //AAAA
@@ -123,6 +124,16 @@ void B1Run::Merge(const G4Run * aRun) {
     for(j = 0; j <9; j++) {
       fMapSum[i][j] += localRun->fMapSum[i][j];
     }
+  }
+  
+  std::map<G4String,int> processMap_localRun = localRun->GetProcessMap();
+  
+  // loop through this map
+  std::map<G4String, int>::iterator it;
+
+  for (it = processMap_localRun.begin(); it != processMap_localRun.end(); it++) {
+  	processMap[it->first] += it->second;
+  
   }
 
   G4Run::Merge(aRun);

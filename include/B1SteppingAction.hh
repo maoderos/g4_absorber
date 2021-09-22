@@ -37,7 +37,7 @@ class B1SteppingAction : public G4UserSteppingAction
     /// method from the base class
     virtual void UserSteppingAction(const G4Step*);
    
-    std::map<G4String,int> getProcessCount() {return processCount;};
+    std::map<G4String,int> getProcessCount() const {return processCount;};
 
   private:
     B1EventAction*  fEventAction;

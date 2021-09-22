@@ -109,7 +109,18 @@ if (generatorAction)
 
  //Creating header for file
 
+ std::stringstream file_physics;
+ file_physics << "data_volumes/data_" << std::setprecision(2) << alpha << "_deg.dat";
+ file_Pphysics = file_physics.str();
+
+ std::ofstream data_physics(file_Pphysics);
+
+ //Adding header to this file
  
+ data_physics << "Process N_process/ev Pz_o\n";
+
+ data_physics.close(); 
+
 
 }
 
@@ -171,7 +182,9 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
   else {
     G4cout
      << G4endl
-     << "--------------------End of Local Run------------------------";
+     << "--------------------End of Local Run------------------------" << G4endl;
+    return;
+
   }
 
   G4cout
@@ -192,15 +205,21 @@ int N = detectorConstruction->getNV();
 std::vector<G4String> names = detectorConstruction->GetNames();
 std::vector<G4String> Regions_p = detectorConstruction->GetPhyNames();
 std::vector<G4String> detName;
-detName.reserve(N);
-  for(int i=0;i<N;i++) {
-      G4String CIname = names[i];
-      detName[i] = CIname;
-  }
 
+	//detName.reserve(N);
+
+  for(int i=0;i<N;i++) {
+      
+      G4String CIname = names[i];
+
+      detName.push_back(CIname);
+
+  }
+ 
  auto print = false;
+ G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
+ 
 if (print) { 
-  G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
     for(int i=0;i<N;i++)
     {
 
@@ -233,17 +252,30 @@ if (print) {
       << G4endl;
       G4cout << " G4PSTermination " << i << ": " << (theRun->GetTermination(i))/nEvt
       << G4endl;
-      G4cout << "----------------------------------------------------------------------------------------" << G4endl;
-
-     
+      G4cout << "----------------------------------------------------------------------------------------" << G4endl;     
 }
 
 }
 
+std::ofstream file_physics(file_Pphysics, std::ios_base::app);
+std::map<G4String, int> processMap = theRun->GetProcessMap();
+
+std::map<G4String, int>::iterator it;
+
+for(it = processMap.begin(); it != processMap.end(); it++) {
+	file_physics << it->first << " " << (1.0*(it->second)/nEvt) << " " 
+		     << std::setprecision(2) << Pz/GeV << "\n";
+		
+
+	G4cout << it->first << " " << (1.0*(it->second)/nEvt) << " " 
+
+		     << std::setprecision(2) << Pz/GeV << "\n" << G4endl;
+		
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+file_physics.close();
 
 
+}
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+

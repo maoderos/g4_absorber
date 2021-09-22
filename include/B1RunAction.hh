@@ -19,6 +19,7 @@
 #include "globals.hh"
 #include <G4Timer.hh>
 #include <vector>
+#include <map>
 #include "G4Run.hh"
 
 class B1Run;
@@ -48,6 +49,7 @@ class B1RunAction : public G4UserRunAction
     G4double alpha;
     G4double Pz;
     G4String filename;
+    G4String file_Pphysics;
 };
 
 #endif
