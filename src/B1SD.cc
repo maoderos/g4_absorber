@@ -77,6 +77,9 @@ if (thePreVL->GetStepStatus() == fGeomBoundary && track == 1) {
    data << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << " " <<  energy/GeV << "\n";
   //test << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n"; Unity test
        
+} else {
+ return false;
+
 }
 
 return true;

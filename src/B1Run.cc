@@ -34,12 +34,13 @@ B1Run::B1Run()
   std::vector<G4String> names = detectorConstruction->GetNames();
 
   std::vector<G4String> detName;
-  detName.reserve(N);
+
   for(int i=0;i<N;i++) {
   G4String CIname = names[i];
-  detName[i] = CIname;
+  detName.push_back(CIname); 
 
   }
+  
 
   G4String primNameSum[10]
     = {"pop","passCell","nOfStep","nOfCollision","nOfSecondary","Trackcounter", "cellFlux",
@@ -58,10 +59,15 @@ B1Run::B1Run()
 
     }
   }
+  
 }
 
 B1Run::~B1Run()
-{;}
+{
+	
+
+
+}
 
 G4double B1Run::GetTotal(const G4THitsMap<G4double> &map) const
 {
@@ -77,12 +83,13 @@ G4double B1Run::GetTotal(const G4THitsMap<G4double> &map) const
 void B1Run::RecordEvent(const G4Event* evt)
 {
 
+
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
         (G4MTRunManager::GetRunManager()->GetUserDetectorConstruction());
 
   const B1SteppingAction* steppingAction 
-      = static_cast<const B1SteppingAction*>
+     = static_cast<const B1SteppingAction*>
         (G4MTRunManager::GetRunManager()->GetUserSteppingAction());
 
   G4int N = detectorConstruction->getNV();
@@ -110,10 +117,10 @@ processMap = steppingAction->getProcessCount();
 }
 
 void B1Run::Merge(const G4Run * aRun) {
- 
+	
   const B1DetectorConstruction* detectorConstruction
       = static_cast<const B1DetectorConstruction*>
-        (G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+        (G4MTRunManager::GetRunManager()->GetUserDetectorConstruction());
     
 
   G4int N = detectorConstruction->getNV();
@@ -126,6 +133,7 @@ void B1Run::Merge(const G4Run * aRun) {
     }
   }
   
+  
   std::map<G4String,int> processMap_localRun = localRun->GetProcessMap();
   
   // loop through this map
@@ -135,6 +143,11 @@ void B1Run::Merge(const G4Run * aRun) {
   	processMap[it->first] += it->second;
   
   }
+  // Get information from local and put it to the master
+  //
+
+  Pz0 = localRun->GetPrimaryPz();
+  alpha0 = localRun->GetPrimaryAngle();
 
   G4Run::Merge(aRun);
 }

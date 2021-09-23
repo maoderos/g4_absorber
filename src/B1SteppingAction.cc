@@ -34,17 +34,18 @@ B1SteppingAction::B1SteppingAction(B1EventAction* eventAction)
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1SteppingAction::~B1SteppingAction()
-{}
+{
+//processCount.clear();
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void B1SteppingAction::UserSteppingAction(const G4Step* aStep)
 {
 
-  B1RunAction* runAction = (B1RunAction*) G4RunManager::GetRunManager()->GetUserRunAction();
 
-  G4double alpha = runAction->get_alpha();
-  G4double pz_o = runAction->get_pz();
+ // G4double alpha = runAction->get_alpha();
+ // G4double pz_o = runAction->get_pz();
 
   auto trackID = aStep->GetTrack()->GetTrackID();
 
@@ -71,6 +72,7 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
 || log_volume == "av_8_impr_1_voFaWTube4_pv_5" || log_volume == "shFaGraphiteCone1"
 || log_volume == "voFaEndPlate" || log_volume == "voFaWTube5") {
   if (trackID == 1) {
+     /*
      G4Track* track = aStep -> GetTrack();
 
      G4StepPoint* point1 = aStep->GetPreStepPoint();
@@ -94,9 +96,13 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
  G4double MomentumDirectionX = track -> GetMomentumDirection().getX();
  G4double MomentumDirectionY = track -> GetMomentumDirection().getY();
  G4double MomentumDirectionZ = track -> GetMomentumDirection().getZ();
+     */
 
+    G4StepPoint* point2 = aStep->GetPostStepPoint();
+    G4String ProcessName1 = point2 -> GetProcessDefinedStep() -> GetProcessName();
  if(aStep->GetPostStepPoint()->GetStepStatus() != fGeomBoundary){
-   //In function of Alpha and Energy 
+   //In function of Alpha and Energy
+   /* 
    std::ostringstream filename;
    filename << "data_volumes/data_physics_" << std::setprecision(2) << pz_o/GeV << "_" << std::setprecision(2) << alpha << ".txt";
                                                                                                                                                  
@@ -106,6 +112,7 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
            << Position2X << " " << Position2Y << " " << Position2Z
            << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " "
            << alpha << " " << pz_o/GeV << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
+   */
    processCount[ProcessName1] += 1;
 
   }

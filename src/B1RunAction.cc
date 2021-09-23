@@ -45,7 +45,7 @@ using namespace std;
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1RunAction::B1RunAction()
-: G4UserRunAction()
+: G4UserRunAction(),alpha(0), Pz(0), filename(""), file_Pphysics(""), arun(0)
 
 {
 
@@ -55,19 +55,24 @@ B1RunAction::B1RunAction()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 B1RunAction::~B1RunAction()
-{}
+{
+}
 
 
 G4Run* B1RunAction::GenerateRun()
-{ return new B1Run; }
+{
+       arun = new B1Run;
+       return arun;
+       	
+
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 void B1RunAction::BeginOfRunAction(const G4Run*)
 {
- G4cout << "BEGIN RUN" << G4endl;
 
-
+G4cout << "Begin Run" << G4endl;
 const B1PrimaryGeneratorAction* generatorAction
  = static_cast<const B1PrimaryGeneratorAction*>
    (G4MTRunManager::GetRunManager()->GetUserPrimaryGeneratorAction());
@@ -103,25 +108,10 @@ if (generatorAction)
  file << "data_" << particleName << "_" << std::setprecision(2) <<  Pz/GeV << "_GeV_" << std::setprecision(2) << alpha << "_deg.dat";
  
  filename = file.str();
+
+
+ arun->SetPrimaryInfos(Pz, alpha);
  
- 
- 
-
- //Creating header for file
-
- std::stringstream file_physics;
- file_physics << "data_volumes/data_" << std::setprecision(2) << alpha << "_deg.dat";
- file_Pphysics = file_physics.str();
-
- std::ofstream data_physics(file_Pphysics);
-
- //Adding header to this file
- 
- data_physics << "Process N_process/ev Pz_o\n";
-
- data_physics.close(); 
-
-
 }
 
 
@@ -134,7 +124,6 @@ if (generatorAction)
 
 void B1RunAction::EndOfRunAction(const G4Run* run)
 {
-  G4cout << "End Of Run" << G4endl;
 
   timer->Stop();
 
@@ -180,12 +169,14 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
      << "--------------------End of Global Run-----------------------";
   }
   else {
-    G4cout
-     << G4endl
-     << "--------------------End of Local Run------------------------" << G4endl;
     return;
 
   }
+
+
+const B1Run* theRun = (const B1Run*) run;
+Pz = theRun->GetPrimaryPz();
+alpha = theRun->GetPrimaryAngle();
 
   G4cout
      << G4endl
@@ -193,12 +184,9 @@ void B1RunAction::EndOfRunAction(const G4Run* run)
      << G4endl
      << "Time of Run: " << timer->GetRealElapsed()
      << G4endl
-     << "Angle: " << alpha << " graus"
+     << "Angle: " << alpha << " degrees\n"
+     << "Pz0: " << Pz/GeV << " GeV/c\n"
      << G4endl;
-
-
-// PRIMITIVE SCORES
-const B1Run* theRun = (const B1Run*) run;
 
 
 int N = detectorConstruction->getNV();
@@ -223,7 +211,7 @@ if (print) {
     for(int i=0;i<N;i++)
     {
 
-
+      //G4double nEvt = (G4double)(theRun->GetNumberOfEvent());
       G4Region* region = G4RegionStore::GetInstance()->GetRegion(Regions_p[i]);
 
       //G4ProductionCuts* cuts = region->GetProductionCuts();
@@ -257,20 +245,29 @@ if (print) {
 
 }
 
-std::ofstream file_physics(file_Pphysics, std::ios_base::app);
+
+
+//Creating header for file
+
+ std::stringstream data_physics;
+ data_physics << "data_volumes/processData_" << std::setprecision(2) << alpha << "_deg.dat";
+
+ std::ofstream file_physics(data_physics.str(), std::ios_base::app);
+
+ 
 std::map<G4String, int> processMap = theRun->GetProcessMap();
 
 std::map<G4String, int>::iterator it;
 
 for(it = processMap.begin(); it != processMap.end(); it++) {
 	file_physics << it->first << " " << (1.0*(it->second)/nEvt) << " " 
-		     << std::setprecision(2) << Pz/GeV << "\n";
 		
+		     << nEvt  << " " <<std::setprecision(2) << Pz/GeV << "\n";
 
-	G4cout << it->first << " " << (1.0*(it->second)/nEvt) << " " 
+	//G4cout << it->first << " " << it->second << " " <<(1.0*(it->second)/nEvt) << " " 
 
-		     << std::setprecision(2) << Pz/GeV << "\n" << G4endl;
-		
+	//	     << nEvt  << " " <<std::setprecision(2) << Pz/GeV << "\n" << G4endl;
+	
 }
 
 file_physics.close();

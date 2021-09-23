@@ -29,6 +29,11 @@ public:
 
   virtual void RecordEvent(const G4Event*);
   virtual void Merge(const G4Run*);
+  void SetPrimaryInfos(G4double Pz,G4double alpha) {
+      Pz0 = Pz;
+      alpha0 = alpha;
+  
+  }
 
   G4double GetPopulation(G4int i) const    { return GetTotal(fMapSum[i][0]); }
   G4double GetPassageCell(G4int i) const    { return GetTotal(fMapSum[i][1]); }
@@ -41,6 +46,9 @@ public:
   G4double GetCylinderSurfaceCurrent(G4int i) const {return GetTotal(fMapSum[i][8]);}
   G4double GetTermination(G4int i) const {return GetTotal(fMapSum[i][9]);}
   std::map<G4String,int> GetProcessMap() const {return processMap;}
+  G4double GetPrimaryPz () const  {return Pz0;}
+  G4double GetPrimaryAngle () const {return alpha0;}
+  
 
   private:
   G4double GetTotal(const G4THitsMap<G4double> &map) const;
@@ -51,6 +59,10 @@ public:
   G4int fColIDSum[43][9];
   G4int HID1;
   G4int HID2;
+  G4double Pz0;
+  G4double alpha0;
+
+
 };
 
 #endif
