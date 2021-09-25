@@ -260,9 +260,7 @@ std::map<G4String, int> processMap = theRun->GetProcessMap();
 std::map<G4String, int>::iterator it;
 
 for(it = processMap.begin(); it != processMap.end(); it++) {
-	file_physics << it->first << " " << (1.0*(it->second)/nEvt) << " " 
-		
-		     << nEvt  << " " <<std::setprecision(2) << Pz/GeV << "\n";
+	file_physics << it->first << " " << it->second << " " << (1.0*(it->second)/nEvt) << " " << nEvt  << " " <<std::setprecision(2) << Pz/GeV << "\n";
 
 	//G4cout << it->first << " " << it->second << " " <<(1.0*(it->second)/nEvt) << " " 
 

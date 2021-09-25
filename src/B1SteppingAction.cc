@@ -72,14 +72,18 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
 || log_volume == "av_8_impr_1_voFaWTube4_pv_5" || log_volume == "shFaGraphiteCone1"
 || log_volume == "voFaEndPlate" || log_volume == "voFaWTube5") {
   if (trackID == 1) {
-     /*
-     G4Track* track = aStep -> GetTrack();
+     
+    G4StepPoint* point2 = aStep->GetPostStepPoint();
+    G4String ProcessName1 = point2 -> GetProcessDefinedStep() -> GetProcessName();
+   
+   /*
+   G4Track* track = aStep -> GetTrack();
 
      G4StepPoint* point1 = aStep->GetPreStepPoint();
-     G4StepPoint* point2 = aStep->GetPostStepPoint();
+   //  G4StepPoint* point2 = aStep->GetPostStepPoint();
 
     //Preparing the variables to be printed
-     G4String ProcessName1 = point2 -> GetProcessDefinedStep() -> GetProcessName();
+    // G4String ProcessName1 = point2 -> GetProcessDefinedStep() -> GetProcessName();
     //G4String ProcessName2 = point2 -> GetProcessDefinedStep() -> GetProcessName();
      G4String ParticleName =  track -> GetParticleDefinition() -> GetParticleName();
      G4double Position1X = point1 -> GetPosition().getX()/cm;
@@ -96,22 +100,23 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
  G4double MomentumDirectionX = track -> GetMomentumDirection().getX();
  G4double MomentumDirectionY = track -> GetMomentumDirection().getY();
  G4double MomentumDirectionZ = track -> GetMomentumDirection().getZ();
-     */
+     
+*/
 
-    G4StepPoint* point2 = aStep->GetPostStepPoint();
-    G4String ProcessName1 = point2 -> GetProcessDefinedStep() -> GetProcessName();
  if(aStep->GetPostStepPoint()->GetStepStatus() != fGeomBoundary){
    //In function of Alpha and Energy
-   /* 
+   //Commented line of code for unity test only
+   /*   
    std::ostringstream filename;
-   filename << "data_volumes/data_physics_" << std::setprecision(2) << pz_o/GeV << "_" << std::setprecision(2) << alpha << ".txt";
+   filename << "data_volumes/data_test_" << std::setprecision(2) << "tt" << "_"
+   << std::setprecision(2) << "tt" << ".txt";
                                                                                                                                                  
    std::ofstream data(filename.str(),std::ios_base::app);
    data << EventID << " " << ParentID << " " << trackID << " " << StepNumber << " "  << ProcessName1  << " " << ParticleName
            << " " << Position1X << " " << Position1Y << " " << Position1Z << " "
            << Position2X << " " << Position2Y << " " << Position2Z
            << " " << MomentumDirectionX << " " << MomentumDirectionY << " " << MomentumDirectionZ << " "
-           << alpha << " " << pz_o/GeV << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
+           << "tt" << " " << "tt" << " " << (aStep->GetTrack()->GetVolume()->GetName())<< "\n";
    */
    processCount[ProcessName1] += 1;
 
@@ -120,28 +125,31 @@ if (log_volume == "av_1_impr_1_shFaSteelEnvelopeC1_pv_0" || log_volume == "av_1_
 }
 }
 
-/* Code for Unity test 
-
+ 
+//Code for Unity test 
+/*
 if (log_volume == "SD1" || log_volume == "SD2") {
  if (trackID == 1) {
  std::stringstream name;
- name << "test_step" << log_volume;
+ name  << "results/" << log_volume <<"/test_step" << log_volume;
  std::ofstream filetest(name.str(), std::ios_base::app);
  
  G4StepPoint* point1 = aStep->GetPreStepPoint();
  G4double x = point1->GetPosition().getX();
  G4double y = point1->GetPosition().getY();
- G4double px = point1->GetMomentumDirection().getX();
+ G4double px = point1->GetMomentum().getX();
 
- G4double py = point1->GetMomentumDirection().getY();
- G4double pz = point1->GetMomentumDirection().getZ();
+ G4double py = point1->GetMomentum().getY();
+ G4double pz = point1->GetMomentum().getZ();
+ G4double energy = point1->GetTotalEnergy();
 
- filetest << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " << pz/GeV << "\n";
+ filetest << x/cm << " " << y/cm << " " << px/GeV << " " << py/GeV << " " <<
+ pz/GeV << " " << energy/GeV << "\n";
  }
 
 }
-
 */
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
