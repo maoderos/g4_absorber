@@ -20,7 +20,7 @@ class B1Hits: public G4VHit {
 
 public:
   B1Hits();
-  ~B1Hits();
+  virtual ~B1Hits();
 
   void print();
   void set_partdef (const G4String particle_name);

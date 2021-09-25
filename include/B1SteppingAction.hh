@@ -1,6 +1,6 @@
 
 //-------------------------------------------------------------------------------------------------------
-//Application developed for studying the dispersion of muon in the Alice Frontal Absorber
+//Application developed for studying the dispersion of muon in the Alice qrontal Absorber
 //History of the code
 //----------------------------
 //Year; Author; Paper	
@@ -16,7 +16,8 @@
 
 #include "G4UserSteppingAction.hh"
 #include "globals.hh"
-#include 	<vector>
+#include <vector>
+#include <map>
 #include "G4TrackStatus.hh"
 
 class B1EventAction;
@@ -27,7 +28,6 @@ class G4LogicalVolume;
 
 
 using namespace std;
-///The stepping Action is used primary to kill the secondary particles to improve the time of run.
 class B1SteppingAction : public G4UserSteppingAction
 {
   public:
@@ -36,13 +36,15 @@ class B1SteppingAction : public G4UserSteppingAction
 
     /// method from the base class
     virtual void UserSteppingAction(const G4Step*);
-
+   
+    std::map<G4String,int> getProcessCount() const {return processCount;};
 
   private:
     B1EventAction*  fEventAction;
     std::vector<G4LogicalVolume* > Log_volumes;
     G4LogicalVolume* fScoringVolume1;
     G4LogicalVolume* fScoringVolume2;
+    std::map<G4String, int> processCount; 
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

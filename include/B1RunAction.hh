@@ -19,6 +19,7 @@
 #include "globals.hh"
 #include <G4Timer.hh>
 #include <vector>
+#include <map>
 #include "G4Run.hh"
 
 class B1Run;
@@ -40,14 +41,16 @@ class B1RunAction : public G4UserRunAction
 
     const G4String getFilename() const {return filename;}
 
-    G4double get_alpha(){return alpha;};
-    G4double get_pz(){return Pz;};
+    G4double get_alpha() const {return alpha;};
+    G4double get_pz() const {return Pz;};
     G4Timer* timer;
   private:
 
     G4double alpha;
     G4double Pz;
     G4String filename;
-};
+    G4String file_Pphysics;
+    B1Run* arun;
+	};
 
 #endif
