@@ -3,10 +3,11 @@ import pandas as pd
 import os
 
 
+
 def analyze_file(filename,angle_i,columns):
     # arrays from detector 1 (SD1)
-    x1,y1,px1,py1,pz1,kinEn1 = np.loadtxt("results/SD1/" + filename, unpack=True)
-    x2,y2,px2,py2,pz2,kinEn2 = np.loadtxt("results/SD2/" + filename, unpack=True)
+    x1,y1,px1,py1,pz1,kinEn1 = np.loadtxt("results/SD1/" + filename, unpack=True,dtype=np.float128)
+    x2,y2,px2,py2,pz2,kinEn2 = np.loadtxt("results/SD2/" + filename, unpack=True,dtype=np.float128)
     
     ## MEAN
 
@@ -29,9 +30,19 @@ def analyze_file(filename,angle_i,columns):
               'y1_mean':y1_mean, 'y1_std':y1_std, 'y2_mean':y2_mean, 'y2_std':y2_std,
               'px1_mean':px1_mean, 'px1_std':px1_std, 'px2_mean':px2_mean, 'px2_std':px2_std,
               'py1_mean':py1_mean, 'py1_std':py1_std, 'py2_mean':py2_mean, 'py2_std':py2_std,
+               'pz1_mean':pz1_mean, 'pz1_std':pz1_std, 'pz2_mean':pz2_mean, 'pz2_std':pz2_std,
               'kinEn1_mean':kinEn1_mean, 'kinEn1_std':kinEn1_std, 'kinEn2_mean':kinEn2_mean,
-              'kinEn2_std':kinEn2_std}
+              'kinEn2_std':kinEn2_std, 'angle':angle_i}
     '''
+    line = "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19} {20}\n".format(x1_mean,x1_std,x2_mean,x2_std,
+                                                                                                                     y1_mean,y1_std,y2_mean,y2_std,
+                                                                                                                     px1_mean,px1_std,px2_mean,px2_std,
+                                                                                                                    py1_mean,py1_std,py2_mean,py2_std,
+                                                                                                                    kinEn1_mean,kinEn1_std,kinEn2_mean,
+                                                                                                                    kinEn2_std, angle)
+                                                                                                                   
+    file.write(line)
+    
     pd.Series([x1_mean,x1_std,x2_mean,x2_std,y1_mean,y1_std,
                      y2_mean,y2_std,px1_mean,px1_std,px2_mean,px2_std,
                      py1_mean,py1_std,py2_mean,py2_std,kinEn1_mean,kinEn1_std,
@@ -49,11 +60,15 @@ detectors = ["SD1", "SD2"]
 # creating a blank dataframe 
 column = {"x1_mean","x1_std","x2_mean","x2_std","y1_mean","y1_std",
                      "y2_mean","y2_std","px1_mean","px1_std","px2_mean","px2_std",
-                     "py1_mean","py1_std","py2_mean","py2_std","kinEn1_mean","kinEn1_std",
-                     "kinEn2_mean","kinEn2_std"}
+                     "py1_mean","py1_std","py2_mean","py2_std","pz1_mean","pz1_std","pz2_mean","pz2_std",
+                     "kinEn1_mean","kinEn1_std","kinEn2_mean","kinEn2_std","angle"}
 dataFrame = pd.DataFrame()
 
 # list of files in SD2
+#file_test = open("test.csv", "a")
+
+#file_test.write("x1_mean x1_std x2_mean x2_std y1_mean y1_std y2_mean y2_std px1_mean px1_std px2_mean px2_std py1_mean py1_std py2_mean py2_std kinEn1_mean kinEn1_std kinEn2_mean kinEn2_std\n")
+
 list_files = os.listdir(path='results/SD2')
 for part in particle:
     for pz_i in pz:
@@ -71,5 +86,6 @@ print(dataFrame)
 ## Save Dataframe in file
 
 dataFrame.to_csv('sim_dataframe.csv')
+
 
 
