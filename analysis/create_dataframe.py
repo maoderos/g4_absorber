@@ -1,8 +1,20 @@
 import numpy as np
 import pandas as pd
 import os
+from io import StringIO
 
+def process_analyzis(angle):
 
+    name_file = "data_volumes/processData_{0}_deg.dat".format(angle_i)
+    df_process = pd.DataFrame()
+
+    for i in open(name_file,'r'):
+
+        process, n_process, process_evt, n_evt, pz = i.split(" ")
+        new_row_process = {"process":process, "n_process":n_process, "process_evt":process_evt, "n_evt":n_evt, "pz":pz }
+        df_process = df_process.append(new_row_process, ignore_index=True)
+
+    return df_process
 
 def analyze_file(filename,angle_i,columns):
     # arrays from detector 1 (SD1)
@@ -26,7 +38,7 @@ def analyze_file(filename,angle_i,columns):
     pz2_std = np.std(pz2); kinEn2_std = np.std(kinEn2)
     
 
-    new_row = {'x1_mean':x1_mean, 'x1_std':x1_std, 'x2_mean':x2_mean, 'x2_std':x2_std, 
+    new_row_dispersion = {'x1_mean':x1_mean, 'x1_std':x1_std, 'x2_mean':x2_mean, 'x2_std':x2_std, 
               'y1_mean':y1_mean, 'y1_std':y1_std, 'y2_mean':y2_mean, 'y2_std':y2_std,
               'px1_mean':px1_mean, 'px1_std':px1_std, 'px2_mean':px2_mean, 'px2_std':px2_std,
               'py1_mean':py1_mean, 'py1_std':py1_std, 'py2_mean':py2_mean, 'py2_std':py2_std,
@@ -48,7 +60,9 @@ def analyze_file(filename,angle_i,columns):
                      py1_mean,py1_std,py2_mean,py2_std,kinEn1_mean,kinEn1_std,
                      kinEn2_mean,kinEn2_std], index=columns)
     '''
-    return new_row
+   
+      
+    return new_row_dispersion
 
 
 particle = ['mu+']
@@ -62,7 +76,8 @@ column = {"x1_mean","x1_std","x2_mean","x2_std","y1_mean","y1_std",
                      "y2_mean","y2_std","px1_mean","px1_std","px2_mean","px2_std",
                      "py1_mean","py1_std","py2_mean","py2_std","pz1_mean","pz1_std","pz2_mean","pz2_std",
                      "kinEn1_mean","kinEn1_std","kinEn2_mean","kinEn2_std","angle"}
-dataFrame = pd.DataFrame()
+
+dataFrame_dispersion = pd.DataFrame()
 
 # list of files in SD2
 #file_test = open("test.csv", "a")
@@ -76,16 +91,26 @@ for part in particle:
             filename = "data_{0}_{1}_GeV_{2}_deg.dat".format(part,pz_i,angle_i)
             # first check if we have the same file directory SD2
             if filename in list_files:
-                row = analyze_file(filename,angle_i,column)
+                row_dispersion = analyze_file(filename,angle_i,column)
                 #print(row)
-                dataFrame = dataFrame.append(row,ignore_index=True)
             
+                dataFrame_dispersion = dataFrame_dispersion.append(row_dispersion,ignore_index=True)
 
-print(dataFrame)
+print(dataFrame_dispersion)
+
+
+dataFrame_process = pd.DataFrame()
+for i in angle:
+    df = process_analyzis(i)
+
+    dataFrame_process = dataFrame_process.append(df, ignore_index=True)
+print(dataFrame_process)
 
 ## Save Dataframe in file
 
-dataFrame.to_csv('sim_dataframe.csv')
+dataFrame_dispersion.to_csv('sim_dataframeDispersion.csv')
+dataFrame_process.to_csv("sim_dataframeProcess.csv")
+
 
 
 
