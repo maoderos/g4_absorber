@@ -11,7 +11,7 @@ def process_analyzis(angle):
     for i in open(name_file,'r'):
 
         process, n_process, process_evt, n_evt, pz = i.split(" ")
-        new_row_process = {"process":process, "n_process":n_process, "process_evt":process_evt, "n_evt":n_evt, "pz":pz }
+        new_row_process = {"process":process, "n_process":n_process, "process_evt":process_evt, "n_evt":n_evt, "pz":pz, "angle":angle}
         df_process = df_process.append(new_row_process, ignore_index=True)
 
     return df_process
@@ -44,7 +44,7 @@ def analyze_file(filename,angle_i,columns):
               'py1_mean':py1_mean, 'py1_std':py1_std, 'py2_mean':py2_mean, 'py2_std':py2_std,
                'pz1_mean':pz1_mean, 'pz1_std':pz1_std, 'pz2_mean':pz2_mean, 'pz2_std':pz2_std,
               'kinEn1_mean':kinEn1_mean, 'kinEn1_std':kinEn1_std, 'kinEn2_mean':kinEn2_mean,
-              'kinEn2_std':kinEn2_std, 'angle':angle_i}
+              'kinEn2_std':kinEn2_std, 'angle':angle_i, 'N':x2.size}
     '''
     line = "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19} {20}\n".format(x1_mean,x1_std,x2_mean,x2_std,
                                                                                                                      y1_mean,y1_std,y2_mean,y2_std,
@@ -67,8 +67,8 @@ def analyze_file(filename,angle_i,columns):
 
 particle = ['mu+']
 pz = [1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9,9.5]
-#angle = [2.5,3,4,7]
-angle=[7]
+angle = [2.5,3,4,7]
+#angle=[7]
 detectors = ["SD1", "SD2"]
 
 # creating a blank dataframe 
@@ -86,8 +86,8 @@ dataFrame_dispersion = pd.DataFrame()
 
 list_files = os.listdir(path='results/SD2')
 for part in particle:
-    for pz_i in pz:
-        for angle_i in angle:
+    for angle_i in angle:
+        for pz_i in pz:
             filename = "data_{0}_{1}_GeV_{2}_deg.dat".format(part,pz_i,angle_i)
             # first check if we have the same file directory SD2
             if filename in list_files:
