@@ -4,8 +4,9 @@ import numpy as np
 
 angle = [2.5,3,4,7]
 
-
+#--------- Dispersion ---------
 # load dataframe
+
 df = pd.read_csv("sim_dataframeDispersion.csv")
 
 # position
@@ -124,5 +125,84 @@ plt.subplots_adjust(
                    wspace=0.5)
 
 plt.savefig("disp_momentum.pdf")
+
+# ------- Physics process --------
+
+df_process = pd.read_csv("sim_dataframeProcess.csv")
+
+print("Unique Physics process in dataframe: ")
+print(df_process["process"].unique())
+
+plt.figure(figsize=(10,5))
+
+plt.subplot(121)
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'CoulombScat')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("Coulomb Scattering / event")
+    plt.xlabel("pz")
+    plt.legend()
+    
+plt.subplot(122)
+
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'msc')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("Multiple Scattering / event")
+    plt.xlabel("pz")
+    plt.legend()
+    
+plt.savefig("scattering.pdf")
+
+plt.figure(figsize=(20,10))
+plt.subplot(221)
+
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'muIoni')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("Muon ionization / event")
+    plt.xlabel("pz")
+    plt.legend()
+    
+    
+plt.subplot(222)
+
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'muPairProd')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("e Pair Production / event")
+    plt.xlabel("pz")
+    plt.legend()
+
+plt.subplot(223)
+
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'muBrems')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("Muon Bremsstrahlung / event")
+    plt.xlabel("pz")
+    plt.legend()
+    
+plt.subplot(224)
+
+for i in angle:
+    df_filt = df_process[(df_process['angle'] == i) & (df_process['pz'] > 2.0) & 
+                         (df_process['process'] == 'muonNuclear')]
+    plt.plot(df_filt["pz"],df_filt["process_evt"], 'o',label=r'$\alpha$ = {0}'.format(i))
+    plt.ylabel("Muon Nuclear / event")
+    plt.xlabel("pz")
+    plt.legend()
+    
+plt.subplots_adjust(
+                   bottom = 0.08,
+                   left = 0.1,
+                   wspace=0.5)
+    
+plt.savefig("mu_process.pdf")
 
 

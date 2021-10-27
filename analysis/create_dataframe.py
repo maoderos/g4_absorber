@@ -5,7 +5,7 @@ from io import StringIO
 
 def process_analyzis(angle):
 
-    name_file = "data_volumes/processData_{0}_deg.dat".format(angle_i)
+    name_file = "data_volumes/processData_{0}_deg.dat".format(angle)
     df_process = pd.DataFrame()
 
     for i in open(name_file,'r'):
